@@ -1407,8 +1407,8 @@ if first_selection == 'Symptom Counts':
             if module_e_syndrome_selection == 'CSUD':
                 st.markdown(f"### {module_e_syndrome_selection}")
                 st.markdown("---")
-                drug_selection_caud = st.selectbox("Which Drug would you like to look at?", ["---", "All", "Sed/Hyp/Anx", "Cannabis", "Stimulants", "Opioids", "Inhalants", "PCP", "Hallucinogens", "Other/Unknown"])
-                if drug_selection_caud == "---":
+                drug_selection_csud = st.selectbox("Which Drug would you like to look at?", ["---", "All", "Sed/Hyp/Anx", "Cannabis", "Stimulants", "Opioids", "Inhalants", "PCP", "Hallucinogens", "Other/Unknown"])
+                if drug_selection_csud == "---":
                     st.write("Your options are as follows:")
                     st.markdown("- **All** - See all of the CSUD problems.")
                     st.markdown("- **Sed/Hyp/Anx**")
@@ -1419,11 +1419,11 @@ if first_selection == 'Symptom Counts':
                     st.markdown("- **PCP**")
                     st.markdown("- **Hallucinogens**")
                     st.markdown("- **Other/Unknown**")
-                if drug_selection_caud == "All":
-                    st.markdown(f"#### {drug_selection_caud}")
+                if drug_selection_csud == "All":
+                    st.markdown(f"#### {drug_selection_csud}")
                     st.markdown("---")
-                if drug_selection_caud == "Sed/Hyp/Anx":
-                    st.markdown(f"#### {drug_selection_caud}")
+                if drug_selection_csud == "Sed/Hyp/Anx":
+                    st.markdown(f"#### {drug_selection_csud}")
                     st.markdown("---")
 
                     # Opening datafile
@@ -1540,8 +1540,8 @@ if first_selection == 'Symptom Counts':
                             st.write(specific_csud_sed_subject_db_2)
                             csv = convert_df(specific_csud_sed_subject_db_2)
                             st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_sed_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
-                if drug_selection_caud == "Cannabis":
-                    st.markdown(f"#### {drug_selection_caud}")
+                if drug_selection_csud == "Cannabis":
+                    st.markdown(f"#### {drug_selection_csud}")
                     st.markdown("---")
 
                     # Opening datafile
@@ -1554,7 +1554,7 @@ if first_selection == 'Symptom Counts':
 
                     module_e_db = full_db.loc[:, final_list]
 
-                    # CSUD Sed/Hyp/Anx # Just Checking Calculation errors
+                    # CSUD Cannabis # Just Checking Calculation errors
                     csud_can_full_db = module_e_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_e52a', 'scid_e52b', 'scid_e60a', 'scid_e60b', 'scid_e68', 'scid_e76', 'scid_e84a', 'scid_e84b', 'scid_e92', 'scid_e100',
                     'scid_e108', 'scid_e116a', 'scid_e116b', 'scid_e124a', 'scid_e124b', 'scid_e132', 'scid_e138', 'scid_e138cnt']]
 
@@ -1658,8 +1658,8 @@ if first_selection == 'Symptom Counts':
                             st.write(specific_csud_can_subject_db_2)
                             csv = convert_df(specific_csud_can_subject_db_2)
                             st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_can_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
-                if drug_selection_caud == "Stimulants":
-                    st.markdown(f"#### {drug_selection_caud}")
+                if drug_selection_csud == "Stimulants":
+                    st.markdown(f"#### {drug_selection_csud}")
                     st.markdown("---")
 
                     # Opening datafile
@@ -1672,7 +1672,7 @@ if first_selection == 'Symptom Counts':
 
                     module_e_db = full_db.loc[:, final_list]
 
-                    # CSUD Sed/Hyp/Anx # Just Checking Calculation errors
+                    # CSUD Stimulants # Just Checking Calculation errors
                     csud_stim_full_db = module_e_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_e53a', 'scid_e53b', 'scid_e61a', 'scid_e61b', 'scid_e69', 'scid_e77', 'scid_e85a', 'scid_e85b', 'scid_e93', 'scid_e101',
                     'scid_e109', 'scid_e117a', 'scid_e117b', 'scid_e125a', 'scid_e125b', 'scid_e133', 'scid_e140', 'scid_e140cnt']]
 
@@ -1776,6 +1776,726 @@ if first_selection == 'Symptom Counts':
                             st.write(specific_csud_stim_subject_db_2)
                             csv = convert_df(specific_csud_stim_subject_db_2)
                             st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_stim_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                if drug_selection_csud == "Opioids":
+                    st.markdown(f"#### {drug_selection_csud}")
+                    st.markdown("---")
+
+                    # Opening datafile
+                    full_db = pd.read_csv(full_data)
+                    module_e_items_db = pd.read_excel(module_e_file)
+                    
+                    # Selecting only module E items (including subject_id of course) [THIS IS ALL OF MODULE E]
+                    module_e_item_list = module_e_items_db['module_e_items'].values.tolist()
+                    final_list = ['subject_id', 'scid_interviewername'] + module_e_item_list
+
+                    module_e_db = full_db.loc[:, final_list]
+
+                    # CSUD Opioids # Just Checking Calculation errors
+                    csud_opi_full_db = module_e_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_e54a', 'scid_e54b', 'scid_e62a', 'scid_e62b', 'scid_e70', 'scid_e78', 'scid_e86a', 'scid_e86b', 'scid_e94', 'scid_e102',
+                    'scid_e110', 'scid_e118a', 'scid_e118b', 'scid_e126a', 'scid_e126b', 'scid_e134', 'scid_e142', 'scid_e142cnt']]
+
+                    # Setting index to subject_id
+                    csud_opi_full_db.set_index('subject_id', inplace = True)
+
+                    # Filling all na values with 0 in order to run comparisons
+                    csud_opi_full_db.fillna(0, inplace = True)
+
+                    # Have to convert 3u option in scid_e25 to just 3
+                    csud_opi_full_db['scid_e78'] = csud_opi_full_db['scid_e78'].replace("3u", "3")
+
+                    # Setting the scid variable to integers instead of floats as it's more legible
+                    csud_opi_full_db = csud_opi_full_db.astype({'scid_e54a':'int', 'scid_e54b':'int', 'scid_e62a':'int', 'scid_e62b':'int', 'scid_e70':'int', 'scid_e78':'int', 'scid_e86a':'int', 'scid_e86b':'int',
+                    'scid_e94':'int', 'scid_e102':'int', 'scid_e110':'int', 'scid_e118a':'int', 'scid_e118b':'int', 'scid_e126a':'int', 'scid_e126b':'int', 'scid_e134':'int', 'scid_e142':'int', 
+                    'scid_e142cnt':'int'})
+
+                    # Counting CSUD OPI symptoms # Max is 11
+                    csud_opi_full_db['A1 Items'] = np.where(((csud_opi_full_db['scid_e54a'] == 3) | (csud_opi_full_db['scid_e54b'] == 3)), 1, 0)
+                    csud_opi_full_db['A2 Items'] = np.where(((csud_opi_full_db['scid_e62a'] == 3) | (csud_opi_full_db['scid_e62b'] == 3)), 1, 0)
+                    csud_opi_full_db['A3 Items'] = np.where(((csud_opi_full_db['scid_e70'] == 3)), 1, 0)
+                    csud_opi_full_db['A4 Items'] = np.where(((csud_opi_full_db['scid_e78'] == 3)), 1, 0)
+                    csud_opi_full_db['A5 Items'] = np.where(((csud_opi_full_db['scid_e86a'] == 3) | (csud_opi_full_db['scid_e86b'] == 3)), 1, 0)
+                    csud_opi_full_db['A6 Items'] = np.where(((csud_opi_full_db['scid_e94'] == 3)), 1, 0)
+                    csud_opi_full_db['A7 Items'] = np.where(((csud_opi_full_db['scid_e102'] == 3)), 1, 0)
+                    csud_opi_full_db['A8 Items'] = np.where(((csud_opi_full_db['scid_e110'] == 3)), 1, 0)
+                    csud_opi_full_db['A9 Items'] = np.where(((csud_opi_full_db['scid_e118a'] == 3) | (csud_opi_full_db['scid_e118b'] == 3)), 1, 0)
+                    csud_opi_full_db['A10 Items'] = np.where(((csud_opi_full_db['scid_e126a'] == 3) | (csud_opi_full_db['scid_e126b'] == 3)), 1, 0)
+                    csud_opi_full_db['A11 Items'] = np.where(((csud_opi_full_db['scid_e134'] == 3)), 1, 0)
+
+                    # Checking Criterion A Discrepancy # Needs to have at least 2 # checking against original eInterview count
+                    csud_opi_full_db['CSUD OPI Criterion A Discrepancy'] = np.where(((csud_opi_full_db['scid_e142cnt'] >= 2) & (csud_opi_full_db['scid_e142'] != 3)), "Problem", "Fine")
+
+                    # Checking Count Discrepancy
+                    csud_opi_full_db['New CSUD OPI Symptom Count'] = csud_opi_full_db.loc[:, ['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 'A10 Items', 'A11 Items']].sum(axis = 1)
+                    csud_opi_full_db['CSUD OPI Symptom Count Discrepancy'] = np.where(((csud_opi_full_db['New CSUD OPI Symptom Count'] != csud_opi_full_db['scid_e142cnt'])), "Problem", "Fine")
+
+                    # Getting the Count Items and the Dsicrepancy Items
+                    refined_csud_opi_db = csud_opi_full_db.loc[:, ['scid_interviewername', 'A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items',
+                    'A10 Items', 'A11 Items', 'scid_e142', 'scid_e142cnt', 'CSUD OPI Criterion A Discrepancy', 'New CSUD OPI Symptom Count', 'CSUD OPI Symptom Count Discrepancy']]
+
+                    # Getting Count Discrepancy direction and Value
+                    refined_csud_opi_db['Count Discrepancy Direction'] = np.where(((csud_opi_full_db['scid_e142cnt'] - csud_opi_full_db['New CSUD OPI Symptom Count']) > 0), "Original Count Larger", 
+                    np.where(((csud_opi_full_db['scid_e142cnt'] == csud_opi_full_db['New CSUD OPI Symptom Count'])), "Same", "New Count Larger"))
+                    refined_csud_opi_db['Count Discrepancy Value'] = csud_opi_full_db['scid_e142cnt'] - csud_opi_full_db['New CSUD OPI Symptom Count']
+
+                    # Getting Only "Problem Subjects"
+                    only_problem_children_csud_opi = refined_csud_opi_db.loc[((refined_csud_opi_db['CSUD OPI Symptom Count Discrepancy'] == "Problem") | (refined_csud_opi_db['CSUD OPI Criterion A Discrepancy'] == 'Problem'))]
+
+                    col1, col2 = st.columns(2)
+                    with col2:
+                            st.write("**Export Breakdown**")
+                            st.write("- In the SCID there is a Criterion A count item (scid_e142cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                    with col1:
+                        st.write("**Column Definitions:**")
+                        st.markdown("- **CSUD OPI Criterion A Discrepancy** - The Criterion A item (scid_e142) should only be marked 3 (threshold) if 2 or more symptoms are accounted for. This column checks to see if that is the case.")
+                        st.markdown("- **New CSUD OPI Symptom Count** - My new symptom count using the Ax Item columns.")
+                        st.markdown("- **CSUD OPI Symptom Count Discrepancy** - Checks whether the the scid criterion A count matches my manual count.")
+
+                    # Creating the framework to be able to see the corresponding interviewers
+                    interviewer_selection_csud_opi = st.checkbox("Would you like to see the associated interviewer?", key = 'csud_opi')
+                    if interviewer_selection_csud_opi:
+                        problem_children_csud_opi_final = only_problem_children_csud_opi[['scid_interviewername','A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'A11 Items', 'scid_e142', 'CSUD OPI Criterion A Discrepancy', 'scid_e142cnt', 'New CSUD OPI Symptom Count', 'CSUD OPI Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_opi_final)
+                        csv = convert_df(problem_children_csud_opi_final)
+                    else:
+                        problem_children_csud_opi_final = only_problem_children_csud_opi[['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'A11 Items', 'scid_e142', 'CSUD OPI Criterion A Discrepancy', 'scid_e142cnt', 'New CSUD OPI Symptom Count', 'CSUD OPI Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_opi_final)
+                        csv = convert_df(problem_children_csud_opi_final)
+                    
+                    column1, column2 = st.columns(2)
+                    with column1:
+                        st.write("Number of Problem Subjects:", len(problem_children_csud_opi_final.index))
+                        st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'csud_opi_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                    with column2:
+                        st.write("Number of Subjects with **New Count Larger**:", len(problem_children_csud_opi_final[problem_children_csud_opi_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                        st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_csud_opi_final[problem_children_csud_opi_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                    csud_opi_problem_subject_list = problem_children_csud_opi_final.index.values.tolist()
+                    see_more_csud_opi = st.multiselect("See Specific Subject Info? [Select as many as you would like]", csud_opi_problem_subject_list)
+                    interviewer_selection_csud_opi_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_csud_opi')
+                    if see_more_csud_opi is not None:
+                        if interviewer_selection_csud_opi_2:
+                            specific_csud_opi_subject_db = csud_opi_full_db.loc[see_more_csud_opi,:]
+                            specific_csud_opi_subject_db_2 = specific_csud_opi_subject_db.loc[:,['scid_interviewername','A1 Items', 'scid_e54a', 'scid_e54b', 'A2 Items', 'scid_e62a', 'scid_e62b',
+                            'A3 Items', 'scid_e70', 'A4 Items', 'scid_e78', 'A5 Items', 'scid_e86a', 'scid_e86b', 'A6 Items', 'scid_e94', 'A7 Items', 'scid_e102', 'A8 Items', 'scid_e110', 
+                            'A9 Items', 'scid_e118a', 'scid_e118b', 'A10 Items', 'scid_e126a', 'scid_e126b', 'A11 Items', 'scid_e134', 'scid_e142', 'scid_e142cnt', 'New CSUD OPI Symptom Count']]
+                            specific_csud_opi_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_opi_subject_db_2)
+                            csv = convert_df(specific_csud_opi_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_opi_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                        else:
+                            specific_csud_opi_subject_db = csud_opi_full_db.loc[see_more_csud_opi,:]
+                            specific_csud_opi_subject_db_2 = specific_csud_opi_subject_db.loc[:,['A1 Items', 'scid_e54a', 'scid_e54b', 'A2 Items', 'scid_e62a', 'scid_e62b',
+                            'A3 Items', 'scid_e70', 'A4 Items', 'scid_e78', 'A5 Items', 'scid_e86a', 'scid_e86b', 'A6 Items', 'scid_e94', 'A7 Items', 'scid_e102', 'A8 Items', 'scid_e110', 
+                            'A9 Items', 'scid_e118a', 'scid_e118b', 'A10 Items', 'scid_e126a', 'scid_e126b', 'A11 Items', 'scid_e134', 'scid_e142', 'scid_e142cnt', 'New CSUD OPI Symptom Count']]
+                            specific_csud_opi_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_opi_subject_db_2)
+                            csv = convert_df(specific_csud_opi_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_opi_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                if drug_selection_csud == "Inhalants":
+                    st.markdown(f"#### {drug_selection_csud}")
+                    st.markdown("---")
+
+                    # Opening datafile
+                    full_db = pd.read_csv(full_data)
+                    module_e_items_db = pd.read_excel(module_e_file)
+                    
+                    # Selecting only module E items (including subject_id of course) [THIS IS ALL OF MODULE E]
+                    module_e_item_list = module_e_items_db['module_e_items'].values.tolist()
+                    final_list = ['subject_id', 'scid_interviewername'] + module_e_item_list
+
+                    module_e_db = full_db.loc[:, final_list]
+
+                    # CSUD Inhalants # Just Checking Calculation errors
+                    csud_inh_full_db = module_e_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_e55a', 'scid_e55b', 'scid_e63a', 'scid_e63b', 'scid_e71', 'scid_e79', 'scid_e87a', 'scid_e87b', 'scid_e95', 'scid_e103',
+                    'scid_e111', 'scid_e119a', 'scid_e119b', 'scid_e127a', 'scid_e127b', 'scid_e144', 'scid_e144cnt']]
+
+                    # Setting index to subject_id
+                    csud_inh_full_db.set_index('subject_id', inplace = True)
+
+                    # Filling all na values with 0 in order to run comparisons
+                    csud_inh_full_db.fillna(0, inplace = True)
+
+                    # Have to convert 3u option in scid_e25 to just 3
+                    csud_inh_full_db['scid_e79'] = csud_inh_full_db['scid_e79'].replace("3u", "3")
+
+                    # Setting the scid variable to integers instead of floats as it's more legible
+                    csud_inh_full_db = csud_inh_full_db.astype({'scid_e55a':'int', 'scid_e55b':'int', 'scid_e63a':'int', 'scid_e63b':'int', 'scid_e71':'int', 'scid_e79':'int', 'scid_e87a':'int', 'scid_e87b':'int',
+                    'scid_e95':'int', 'scid_e103':'int', 'scid_e111':'int', 'scid_e119a':'int', 'scid_e119b':'int', 'scid_e127a':'int', 'scid_e127b':'int', 'scid_e144':'int', 'scid_e144cnt':'int'})
+
+                    # Counting CSUD INH symptoms # Max is 11
+                    csud_inh_full_db['A1 Items'] = np.where(((csud_inh_full_db['scid_e55a'] == 3) | (csud_inh_full_db['scid_e55b'] == 3)), 1, 0)
+                    csud_inh_full_db['A2 Items'] = np.where(((csud_inh_full_db['scid_e63a'] == 3) | (csud_inh_full_db['scid_e63b'] == 3)), 1, 0)
+                    csud_inh_full_db['A3 Items'] = np.where(((csud_inh_full_db['scid_e71'] == 3)), 1, 0)
+                    csud_inh_full_db['A4 Items'] = np.where(((csud_inh_full_db['scid_e79'] == 3)), 1, 0)
+                    csud_inh_full_db['A5 Items'] = np.where(((csud_inh_full_db['scid_e87a'] == 3) | (csud_inh_full_db['scid_e87b'] == 3)), 1, 0)
+                    csud_inh_full_db['A6 Items'] = np.where(((csud_inh_full_db['scid_e95'] == 3)), 1, 0)
+                    csud_inh_full_db['A7 Items'] = np.where(((csud_inh_full_db['scid_e103'] == 3)), 1, 0)
+                    csud_inh_full_db['A8 Items'] = np.where(((csud_inh_full_db['scid_e111'] == 3)), 1, 0)
+                    csud_inh_full_db['A9 Items'] = np.where(((csud_inh_full_db['scid_e119a'] == 3) | (csud_inh_full_db['scid_e119b'] == 3)), 1, 0)
+                    csud_inh_full_db['A10 Items'] = np.where(((csud_inh_full_db['scid_e127a'] == 3) | (csud_inh_full_db['scid_e127b'] == 3)), 1, 0)
+
+                    # Checking Criterion A Discrepancy # Needs to have at least 2 # checking against original eInterview count
+                    csud_inh_full_db['CSUD INH Criterion A Discrepancy'] = np.where(((csud_inh_full_db['scid_e144cnt'] >= 2) & (csud_inh_full_db['scid_e144'] != 3)), "Problem", "Fine")
+
+                    # Checking Count Discrepancy
+                    csud_inh_full_db['New CSUD INH Symptom Count'] = csud_inh_full_db.loc[:, ['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 'A10 Items']].sum(axis = 1)
+                    csud_inh_full_db['CSUD INH Symptom Count Discrepancy'] = np.where(((csud_inh_full_db['New CSUD INH Symptom Count'] != csud_inh_full_db['scid_e144cnt'])), "Problem", "Fine")
+
+                    # Getting the Count Items and the Dsicrepancy Items
+                    refined_csud_inh_db = csud_inh_full_db.loc[:, ['scid_interviewername', 'A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items',
+                    'A10 Items', 'scid_e144', 'scid_e144cnt', 'CSUD INH Criterion A Discrepancy', 'New CSUD INH Symptom Count', 'CSUD INH Symptom Count Discrepancy']]
+
+                    # Getting Count Discrepancy direction and Value
+                    refined_csud_inh_db['Count Discrepancy Direction'] = np.where(((csud_inh_full_db['scid_e144cnt'] - csud_inh_full_db['New CSUD INH Symptom Count']) > 0), "Original Count Larger", 
+                    np.where(((csud_inh_full_db['scid_e144cnt'] == csud_inh_full_db['New CSUD INH Symptom Count'])), "Same", "New Count Larger"))
+                    refined_csud_inh_db['Count Discrepancy Value'] = csud_inh_full_db['scid_e144cnt'] - csud_inh_full_db['New CSUD INH Symptom Count']
+
+                    # Getting Only "Problem Subjects"
+                    only_problem_children_csud_inh = refined_csud_inh_db.loc[((refined_csud_inh_db['CSUD INH Symptom Count Discrepancy'] == "Problem") | (refined_csud_inh_db['CSUD INH Criterion A Discrepancy'] == 'Problem'))]
+
+                    col1, col2 = st.columns(2)
+                    with col2:
+                            st.write("**Export Breakdown**")
+                            st.write("- In the SCID there is a Criterion A count item (scid_e144cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                    with col1:
+                        st.write("**Column Definitions:**")
+                        st.markdown("- **CSUD INH Criterion A Discrepancy** - The Criterion A item (scid_e144) should only be marked 3 (threshold) if 2 or more symptoms are accounted for. This column checks to see if that is the case.")
+                        st.markdown("- **New CSUD INH Symptom Count** - My new symptom count using the Ax Item columns.")
+                        st.markdown("- **CSUD INH Symptom Count Discrepancy** - Checks whether the the scid criterion A count matches my manual count.")
+
+                    # Creating the framework to be able to see the corresponding interviewers
+                    interviewer_selection_csud_inh = st.checkbox("Would you like to see the associated interviewer?", key = 'csud_inh')
+                    if interviewer_selection_csud_inh:
+                        problem_children_csud_inh_final = only_problem_children_csud_inh[['scid_interviewername','A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'scid_e144', 'CSUD INH Criterion A Discrepancy', 'scid_e144cnt', 'New CSUD INH Symptom Count', 'CSUD INH Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_inh_final)
+                        csv = convert_df(problem_children_csud_inh_final)
+                    else:
+                        problem_children_csud_inh_final = only_problem_children_csud_inh[['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'scid_e144', 'CSUD INH Criterion A Discrepancy', 'scid_e144cnt', 'New CSUD INH Symptom Count', 'CSUD INH Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_inh_final)
+                        csv = convert_df(problem_children_csud_inh_final)
+                    
+                    column1, column2 = st.columns(2)
+                    with column1:
+                        st.write("Number of Problem Subjects:", len(problem_children_csud_inh_final.index))
+                        st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'csud_inh_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                    with column2:
+                        st.write("Number of Subjects with **New Count Larger**:", len(problem_children_csud_inh_final[problem_children_csud_inh_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                        st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_csud_inh_final[problem_children_csud_inh_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                    csud_inh_problem_subject_list = problem_children_csud_inh_final.index.values.tolist()
+                    see_more_csud_inh = st.multiselect("See Specific Subject Info? [Select as many as you would like]", csud_inh_problem_subject_list)
+                    interviewer_selection_csud_inh_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_csud_inh')
+                    if see_more_csud_inh is not None:
+                        if interviewer_selection_csud_inh_2:
+                            specific_csud_inh_subject_db = csud_inh_full_db.loc[see_more_csud_inh,:]
+                            specific_csud_inh_subject_db_2 = specific_csud_inh_subject_db.loc[:,['scid_interviewername','A1 Items', 'scid_e55a', 'scid_e55b', 'A2 Items', 'scid_e63a', 'scid_e63b',
+                            'A3 Items', 'scid_e71', 'A4 Items', 'scid_e79', 'A5 Items', 'scid_e87a', 'scid_e87b', 'A6 Items', 'scid_e95', 'A7 Items', 'scid_e103', 'A8 Items', 'scid_e111', 
+                            'A9 Items', 'scid_e119a', 'scid_e119b', 'A10 Items', 'scid_e127a', 'scid_e127b', 'scid_e144', 'scid_e144cnt', 'New CSUD INH Symptom Count']]
+                            specific_csud_inh_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_inh_subject_db_2)
+                            csv = convert_df(specific_csud_inh_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_inh_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                        else:
+                            specific_csud_inh_subject_db = csud_inh_full_db.loc[see_more_csud_inh,:]
+                            specific_csud_inh_subject_db_2 = specific_csud_inh_subject_db.loc[:,['A1 Items', 'scid_e55a', 'scid_e55b', 'A2 Items', 'scid_e63a', 'scid_e63b',
+                            'A3 Items', 'scid_e71', 'A4 Items', 'scid_e79', 'A5 Items', 'scid_e87a', 'scid_e87b', 'A6 Items', 'scid_e95', 'A7 Items', 'scid_e103', 'A8 Items', 'scid_e111', 
+                            'A9 Items', 'scid_e119a', 'scid_e119b', 'A10 Items', 'scid_e127a', 'scid_e127b', 'scid_e144', 'scid_e144cnt', 'New CSUD INH Symptom Count']]
+                            specific_csud_inh_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_inh_subject_db_2)
+                            csv = convert_df(specific_csud_inh_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_inh_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                if drug_selection_csud == "PCP":
+                    st.markdown(f"#### {drug_selection_csud}")
+                    st.markdown("---")
+
+                    # Opening datafile
+                    full_db = pd.read_csv(full_data)
+                    module_e_items_db = pd.read_excel(module_e_file)
+                    
+                    # Selecting only module E items (including subject_id of course) [THIS IS ALL OF MODULE E]
+                    module_e_item_list = module_e_items_db['module_e_items'].values.tolist()
+                    final_list = ['subject_id', 'scid_interviewername'] + module_e_item_list
+
+                    module_e_db = full_db.loc[:, final_list]
+
+                    # CSUD PCP # Just Checking Calculation errors
+                    csud_pcp_full_db = module_e_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_e56a', 'scid_e56b', 'scid_e64a', 'scid_e64b', 'scid_e72', 'scid_e80', 'scid_e88a', 'scid_e88b', 'scid_e96', 'scid_e104',
+                    'scid_e112', 'scid_e120a', 'scid_e120b', 'scid_e128a', 'scid_e128b', 'scid_e146', 'scid_e146cnt']]
+
+                    # Setting index to subject_id
+                    csud_pcp_full_db.set_index('subject_id', inplace = True)
+
+                    # Filling all na values with 0 in order to run comparisons
+                    csud_pcp_full_db.fillna(0, inplace = True)
+
+                    # Have to convert 3u option in scid_e25 to just 3
+                    csud_pcp_full_db['scid_e80'] = csud_pcp_full_db['scid_e80'].replace("3u", "3")
+
+                    # Setting the scid variable to integers instead of floats as it's more legible
+                    csud_pcp_full_db = csud_pcp_full_db.astype({'scid_e56a':'int', 'scid_e56b':'int', 'scid_e64a':'int', 'scid_e64b':'int', 'scid_e72':'int', 'scid_e80':'int', 'scid_e88a':'int', 'scid_e88b':'int',
+                    'scid_e96':'int', 'scid_e104':'int', 'scid_e112':'int', 'scid_e120a':'int', 'scid_e120b':'int', 'scid_e128a':'int', 'scid_e128b':'int', 'scid_e146':'int', 'scid_e146cnt':'int'})
+
+                    # Counting CSUD PCP symptoms # Max is 11
+                    csud_pcp_full_db['A1 Items'] = np.where(((csud_pcp_full_db['scid_e56a'] == 3) | (csud_pcp_full_db['scid_e56b'] == 3)), 1, 0)
+                    csud_pcp_full_db['A2 Items'] = np.where(((csud_pcp_full_db['scid_e64a'] == 3) | (csud_pcp_full_db['scid_e64b'] == 3)), 1, 0)
+                    csud_pcp_full_db['A3 Items'] = np.where(((csud_pcp_full_db['scid_e72'] == 3)), 1, 0)
+                    csud_pcp_full_db['A4 Items'] = np.where(((csud_pcp_full_db['scid_e80'] == 3)), 1, 0)
+                    csud_pcp_full_db['A5 Items'] = np.where(((csud_pcp_full_db['scid_e88a'] == 3) | (csud_pcp_full_db['scid_e88b'] == 3)), 1, 0)
+                    csud_pcp_full_db['A6 Items'] = np.where(((csud_pcp_full_db['scid_e96'] == 3)), 1, 0)
+                    csud_pcp_full_db['A7 Items'] = np.where(((csud_pcp_full_db['scid_e104'] == 3)), 1, 0)
+                    csud_pcp_full_db['A8 Items'] = np.where(((csud_pcp_full_db['scid_e112'] == 3)), 1, 0)
+                    csud_pcp_full_db['A9 Items'] = np.where(((csud_pcp_full_db['scid_e120a'] == 3) | (csud_pcp_full_db['scid_e120b'] == 3)), 1, 0)
+                    csud_pcp_full_db['A10 Items'] = np.where(((csud_pcp_full_db['scid_e128a'] == 3) | (csud_pcp_full_db['scid_e128b'] == 3)), 1, 0)
+
+                    # Checking Criterion A Discrepancy # Needs to have at least 2 # checking against original eInterview count
+                    csud_pcp_full_db['CSUD PCP Criterion A Discrepancy'] = np.where(((csud_pcp_full_db['scid_e146cnt'] >= 2) & (csud_pcp_full_db['scid_e146'] != 3)), "Problem", "Fine")
+
+                    # Checking Count Discrepancy
+                    csud_pcp_full_db['New CSUD PCP Symptom Count'] = csud_pcp_full_db.loc[:, ['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 'A10 Items']].sum(axis = 1)
+                    csud_pcp_full_db['CSUD PCP Symptom Count Discrepancy'] = np.where(((csud_pcp_full_db['New CSUD PCP Symptom Count'] != csud_pcp_full_db['scid_e146cnt'])), "Problem", "Fine")
+
+                    # Getting the Count Items and the Dsicrepancy Items
+                    refined_csud_pcp_db = csud_pcp_full_db.loc[:, ['scid_interviewername', 'A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items',
+                    'A10 Items', 'scid_e146', 'scid_e146cnt', 'CSUD PCP Criterion A Discrepancy', 'New CSUD PCP Symptom Count', 'CSUD PCP Symptom Count Discrepancy']]
+
+                    # Getting Count Discrepancy direction and Value
+                    refined_csud_pcp_db['Count Discrepancy Direction'] = np.where(((csud_pcp_full_db['scid_e146cnt'] - csud_pcp_full_db['New CSUD PCP Symptom Count']) > 0), "Original Count Larger", 
+                    np.where(((csud_pcp_full_db['scid_e146cnt'] == csud_pcp_full_db['New CSUD PCP Symptom Count'])), "Same", "New Count Larger"))
+                    refined_csud_pcp_db['Count Discrepancy Value'] = csud_pcp_full_db['scid_e146cnt'] - csud_pcp_full_db['New CSUD PCP Symptom Count']
+
+                    # Getting Only "Problem Subjects"
+                    only_problem_children_csud_pcp = refined_csud_pcp_db.loc[((refined_csud_pcp_db['CSUD PCP Symptom Count Discrepancy'] == "Problem") | (refined_csud_pcp_db['CSUD PCP Criterion A Discrepancy'] == 'Problem'))]
+
+                    col1, col2 = st.columns(2)
+                    with col2:
+                            st.write("**Export Breakdown**")
+                            st.write("- In the SCID there is a Criterion A count item (scid_e146cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                    with col1:
+                        st.write("**Column Definitions:**")
+                        st.markdown("- **CSUD PCP Criterion A Discrepancy** - The Criterion A item (scid_e146) should only be marked 3 (threshold) if 2 or more symptoms are accounted for. This column checks to see if that is the case.")
+                        st.markdown("- **New CSUD PCP Symptom Count** - My new symptom count using the Ax Item columns.")
+                        st.markdown("- **CSUD PCP Symptom Count Discrepancy** - Checks whether the the scid criterion A count matches my manual count.")
+
+                    # Creating the framework to be able to see the corresponding interviewers
+                    interviewer_selection_csud_pcp = st.checkbox("Would you like to see the associated interviewer?", key = 'csud_pcp')
+                    if interviewer_selection_csud_pcp:
+                        problem_children_csud_pcp_final = only_problem_children_csud_pcp[['scid_interviewername','A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'scid_e146', 'CSUD PCP Criterion A Discrepancy', 'scid_e146cnt', 'New CSUD PCP Symptom Count', 'CSUD PCP Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_pcp_final)
+                        csv = convert_df(problem_children_csud_pcp_final)
+                    else:
+                        problem_children_csud_pcp_final = only_problem_children_csud_pcp[['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'scid_e146', 'CSUD PCP Criterion A Discrepancy', 'scid_e146cnt', 'New CSUD PCP Symptom Count', 'CSUD PCP Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_pcp_final)
+                        csv = convert_df(problem_children_csud_pcp_final)
+                    
+                    column1, column2 = st.columns(2)
+                    with column1:
+                        st.write("Number of Problem Subjects:", len(problem_children_csud_pcp_final.index))
+                        st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'csud_pcp_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                    with column2:
+                        st.write("Number of Subjects with **New Count Larger**:", len(problem_children_csud_pcp_final[problem_children_csud_pcp_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                        st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_csud_pcp_final[problem_children_csud_pcp_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                    csud_pcp_problem_subject_list = problem_children_csud_pcp_final.index.values.tolist()
+                    see_more_csud_pcp = st.multiselect("See Specific Subject Info? [Select as many as you would like]", csud_pcp_problem_subject_list)
+                    interviewer_selection_csud_pcp_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_csud_pcp')
+                    if see_more_csud_pcp is not None:
+                        if interviewer_selection_csud_pcp_2:
+                            specific_csud_pcp_subject_db = csud_pcp_full_db.loc[see_more_csud_pcp,:]
+                            specific_csud_pcp_subject_db_2 = specific_csud_pcp_subject_db.loc[:,['scid_interviewername','A1 Items', 'scid_e56a', 'scid_e56b', 'A2 Items', 'scid_e64a', 'scid_e64b',
+                            'A3 Items', 'scid_e72', 'A4 Items', 'scid_e80', 'A5 Items', 'scid_e88a', 'scid_e88b', 'A6 Items', 'scid_e96', 'A7 Items', 'scid_e104', 'A8 Items', 'scid_e112', 
+                            'A9 Items', 'scid_e120a', 'scid_e120b', 'A10 Items', 'scid_e128a', 'scid_e128b', 'scid_e146', 'scid_e146cnt', 'New CSUD PCP Symptom Count']]
+                            specific_csud_pcp_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_pcp_subject_db_2)
+                            csv = convert_df(specific_csud_pcp_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_pcp_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                        else:
+                            specific_csud_pcp_subject_db = csud_pcp_full_db.loc[see_more_csud_pcp,:]
+                            specific_csud_pcp_subject_db_2 = specific_csud_pcp_subject_db.loc[:,['A1 Items', 'scid_e56a', 'scid_e56b', 'A2 Items', 'scid_e64a', 'scid_e64b',
+                            'A3 Items', 'scid_e72', 'A4 Items', 'scid_e80', 'A5 Items', 'scid_e88a', 'scid_e88b', 'A6 Items', 'scid_e96', 'A7 Items', 'scid_e104', 'A8 Items', 'scid_e112', 
+                            'A9 Items', 'scid_e120a', 'scid_e120b', 'A10 Items', 'scid_e128a', 'scid_e128b', 'scid_e146', 'scid_e146cnt', 'New CSUD PCP Symptom Count']]
+                            specific_csud_pcp_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_pcp_subject_db_2)
+                            csv = convert_df(specific_csud_pcp_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_pcp_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                if drug_selection_csud == "Hallucinogens":
+                    st.markdown(f"#### {drug_selection_csud}")
+                    st.markdown("---")
+
+                    # Opening datafile
+                    full_db = pd.read_csv(full_data)
+                    module_e_items_db = pd.read_excel(module_e_file)
+                    
+                    # Selecting only module E items (including subject_id of course) [THIS IS ALL OF MODULE E]
+                    module_e_item_list = module_e_items_db['module_e_items'].values.tolist()
+                    final_list = ['subject_id', 'scid_interviewername'] + module_e_item_list
+
+                    module_e_db = full_db.loc[:, final_list]
+
+                    # CSUD Hallucinogens # Just Checking Calculation errors
+                    csud_hal_full_db = module_e_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_e57a', 'scid_e57b', 'scid_e65a', 'scid_e65b', 'scid_e73', 'scid_e81', 'scid_e89a', 'scid_e89b', 'scid_e97', 'scid_e105',
+                    'scid_e113', 'scid_e121a', 'scid_e121b', 'scid_e129a', 'scid_e129b', 'scid_e148', 'scid_e148cnt']]
+
+                    # Setting index to subject_id
+                    csud_hal_full_db.set_index('subject_id', inplace = True)
+
+                    # Filling all na values with 0 in order to run comparisons
+                    csud_hal_full_db.fillna(0, inplace = True)
+
+                    # Have to convert 3u option in scid_e25 to just 3
+                    csud_hal_full_db['scid_e81'] = csud_hal_full_db['scid_e81'].replace("3u", "3")
+
+                    # Setting the scid variable to integers instead of floats as it's more legible
+                    csud_hal_full_db = csud_hal_full_db.astype({'scid_e57a':'int', 'scid_e57b':'int', 'scid_e65a':'int', 'scid_e65b':'int', 'scid_e73':'int', 'scid_e81':'int', 'scid_e89a':'int', 'scid_e89b':'int',
+                    'scid_e97':'int', 'scid_e105':'int', 'scid_e113':'int', 'scid_e121a':'int', 'scid_e121b':'int', 'scid_e129a':'int', 'scid_e129b':'int', 'scid_e148':'int', 'scid_e148cnt':'int'})
+
+                    # Counting CSUD HALL symptoms # Max is 11
+                    csud_hal_full_db['A1 Items'] = np.where(((csud_hal_full_db['scid_e57a'] == 3) | (csud_hal_full_db['scid_e57b'] == 3)), 1, 0)
+                    csud_hal_full_db['A2 Items'] = np.where(((csud_hal_full_db['scid_e65a'] == 3) | (csud_hal_full_db['scid_e65b'] == 3)), 1, 0)
+                    csud_hal_full_db['A3 Items'] = np.where(((csud_hal_full_db['scid_e73'] == 3)), 1, 0)
+                    csud_hal_full_db['A4 Items'] = np.where(((csud_hal_full_db['scid_e81'] == 3)), 1, 0)
+                    csud_hal_full_db['A5 Items'] = np.where(((csud_hal_full_db['scid_e89a'] == 3) | (csud_hal_full_db['scid_e89b'] == 3)), 1, 0)
+                    csud_hal_full_db['A6 Items'] = np.where(((csud_hal_full_db['scid_e97'] == 3)), 1, 0)
+                    csud_hal_full_db['A7 Items'] = np.where(((csud_hal_full_db['scid_e105'] == 3)), 1, 0)
+                    csud_hal_full_db['A8 Items'] = np.where(((csud_hal_full_db['scid_e113'] == 3)), 1, 0)
+                    csud_hal_full_db['A9 Items'] = np.where(((csud_hal_full_db['scid_e121a'] == 3) | (csud_hal_full_db['scid_e121b'] == 3)), 1, 0)
+                    csud_hal_full_db['A10 Items'] = np.where(((csud_hal_full_db['scid_e129a'] == 3) | (csud_hal_full_db['scid_e129b'] == 3)), 1, 0)
+
+                    # Checking Criterion A Discrepancy # Needs to have at least 2 # checking against original eInterview count
+                    csud_hal_full_db['CSUD HALL Criterion A Discrepancy'] = np.where(((csud_hal_full_db['scid_e148cnt'] >= 2) & (csud_hal_full_db['scid_e148'] != 3)), "Problem", "Fine")
+
+                    # Checking Count Discrepancy
+                    csud_hal_full_db['New CSUD HALL Symptom Count'] = csud_hal_full_db.loc[:, ['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 'A10 Items']].sum(axis = 1)
+                    csud_hal_full_db['CSUD HALL Symptom Count Discrepancy'] = np.where(((csud_hal_full_db['New CSUD HALL Symptom Count'] != csud_hal_full_db['scid_e148cnt'])), "Problem", "Fine")
+
+                    # Getting the Count Items and the Dsicrepancy Items
+                    refined_csud_hal_db = csud_hal_full_db.loc[:, ['scid_interviewername', 'A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items',
+                    'A10 Items', 'scid_e148', 'scid_e148cnt', 'CSUD HALL Criterion A Discrepancy', 'New CSUD HALL Symptom Count', 'CSUD HALL Symptom Count Discrepancy']]
+
+                    # Getting Count Discrepancy direction and Value
+                    refined_csud_hal_db['Count Discrepancy Direction'] = np.where(((csud_hal_full_db['scid_e148cnt'] - csud_hal_full_db['New CSUD HALL Symptom Count']) > 0), "Original Count Larger", 
+                    np.where(((csud_hal_full_db['scid_e148cnt'] == csud_hal_full_db['New CSUD HALL Symptom Count'])), "Same", "New Count Larger"))
+                    refined_csud_hal_db['Count Discrepancy Value'] = csud_hal_full_db['scid_e148cnt'] - csud_hal_full_db['New CSUD HALL Symptom Count']
+
+                    # Getting Only "Problem Subjects"
+                    only_problem_children_csud_hal = refined_csud_hal_db.loc[((refined_csud_hal_db['CSUD HALL Symptom Count Discrepancy'] == "Problem") | (refined_csud_hal_db['CSUD HALL Criterion A Discrepancy'] == 'Problem'))]
+
+                    col1, col2 = st.columns(2)
+                    with col2:
+                            st.write("**Export Breakdown**")
+                            st.write("- In the SCID there is a Criterion A count item (scid_e148cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                    with col1:
+                        st.write("**Column Definitions:**")
+                        st.markdown("- **CSUD HALL Criterion A Discrepancy** - The Criterion A item (scid_e148) should only be marked 3 (threshold) if 2 or more symptoms are accounted for. This column checks to see if that is the case.")
+                        st.markdown("- **New CSUD HALL Symptom Count** - My new symptom count using the Ax Item columns.")
+                        st.markdown("- **CSUD HALL Symptom Count Discrepancy** - Checks whether the the scid criterion A count matches my manual count.")
+
+                    # Creating the framework to be able to see the corresponding interviewers
+                    interviewer_selection_csud_hal = st.checkbox("Would you like to see the associated interviewer?", key = 'csud_hal')
+                    if interviewer_selection_csud_hal:
+                        problem_children_csud_hal_final = only_problem_children_csud_hal[['scid_interviewername','A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'scid_e148', 'CSUD HALL Criterion A Discrepancy', 'scid_e148cnt', 'New CSUD HALL Symptom Count', 'CSUD HALL Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_hal_final)
+                        csv = convert_df(problem_children_csud_hal_final)
+                    else:
+                        problem_children_csud_hal_final = only_problem_children_csud_hal[['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'scid_e148', 'CSUD HALL Criterion A Discrepancy', 'scid_e148cnt', 'New CSUD HALL Symptom Count', 'CSUD HALL Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_hal_final)
+                        csv = convert_df(problem_children_csud_hal_final)
+                    
+                    column1, column2 = st.columns(2)
+                    with column1:
+                        st.write("Number of Problem Subjects:", len(problem_children_csud_hal_final.index))
+                        st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'csud_hal_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                    with column2:
+                        st.write("Number of Subjects with **New Count Larger**:", len(problem_children_csud_hal_final[problem_children_csud_hal_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                        st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_csud_hal_final[problem_children_csud_hal_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                    csud_hal_problem_subject_list = problem_children_csud_hal_final.index.values.tolist()
+                    see_more_csud_hal = st.multiselect("See Specific Subject Info? [Select as many as you would like]", csud_hal_problem_subject_list)
+                    interviewer_selection_csud_hal_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_csud_hal')
+                    if see_more_csud_hal is not None:
+                        if interviewer_selection_csud_hal_2:
+                            specific_csud_hal_subject_db = csud_hal_full_db.loc[see_more_csud_hal,:]
+                            specific_csud_hal_subject_db_2 = specific_csud_hal_subject_db.loc[:,['scid_interviewername','A1 Items', 'scid_e57a', 'scid_e57b', 'A2 Items', 'scid_e65a', 'scid_e65b',
+                            'A3 Items', 'scid_e73', 'A4 Items', 'scid_e81', 'A5 Items', 'scid_e89a', 'scid_e89b', 'A6 Items', 'scid_e97', 'A7 Items', 'scid_e105', 'A8 Items', 'scid_e113', 
+                            'A9 Items', 'scid_e121a', 'scid_e121b', 'A10 Items', 'scid_e129a', 'scid_e129b', 'scid_e148', 'scid_e148cnt', 'New CSUD HALL Symptom Count']]
+                            specific_csud_hal_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_hal_subject_db_2)
+                            csv = convert_df(specific_csud_hal_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_hal_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                        else:
+                            specific_csud_hal_subject_db = csud_hal_full_db.loc[see_more_csud_hal,:]
+                            specific_csud_hal_subject_db_2 = specific_csud_hal_subject_db.loc[:,['A1 Items', 'scid_e57a', 'scid_e57b', 'A2 Items', 'scid_e65a', 'scid_e65b',
+                            'A3 Items', 'scid_e73', 'A4 Items', 'scid_e81', 'A5 Items', 'scid_e89a', 'scid_e89b', 'A6 Items', 'scid_e97', 'A7 Items', 'scid_e105', 'A8 Items', 'scid_e113', 
+                            'A9 Items', 'scid_e121a', 'scid_e121b', 'A10 Items', 'scid_e129a', 'scid_e129b', 'scid_e148', 'scid_e148cnt', 'New CSUD HALL Symptom Count']]
+                            specific_csud_hal_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_hal_subject_db_2)
+                            csv = convert_df(specific_csud_hal_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_hal_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                if drug_selection_csud == "Other/Unknown":
+                    st.markdown(f"#### {drug_selection_csud}")
+                    st.markdown("---")
+
+                    # Opening datafile
+                    full_db = pd.read_csv(full_data)
+                    module_e_items_db = pd.read_excel(module_e_file)
+                    
+                    # Selecting only module E items (including subject_id of course) [THIS IS ALL OF MODULE E]
+                    module_e_item_list = module_e_items_db['module_e_items'].values.tolist()
+                    final_list = ['subject_id', 'scid_interviewername'] + module_e_item_list
+
+                    module_e_db = full_db.loc[:, final_list]
+
+                    # CSUD Other/Unknown # Just Checking Calculation errors
+                    csud_oth_full_db = module_e_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_e58a', 'scid_e58b', 'scid_e66a', 'scid_e66b', 'scid_e74', 'scid_e82', 'scid_e90a', 'scid_e90b', 'scid_e98', 'scid_e106',
+                    'scid_e114', 'scid_e122a', 'scid_e122b', 'scid_e130a', 'scid_e130b', 'scid_e135', 'scid_e150', 'scid_e150cnt']]
+
+                    # Setting index to subject_id
+                    csud_oth_full_db.set_index('subject_id', inplace = True)
+
+                    # Filling all na values with 0 in order to run comparisons
+                    csud_oth_full_db.fillna(0, inplace = True)
+
+                    # Have to convert 3u option in scid_e25 to just 3
+                    csud_oth_full_db['scid_e82'] = csud_oth_full_db['scid_e82'].replace("3u", "3")
+
+                    # Setting the scid variable to integers instead of floats as it's more legible
+                    csud_oth_full_db = csud_oth_full_db.astype({'scid_e58a':'int', 'scid_e58b':'int', 'scid_e66a':'int', 'scid_e66b':'int', 'scid_e74':'int', 'scid_e82':'int', 'scid_e90a':'int', 'scid_e90b':'int',
+                    'scid_e98':'int', 'scid_e106':'int', 'scid_e114':'int', 'scid_e122a':'int', 'scid_e122b':'int', 'scid_e130a':'int', 'scid_e130b':'int', 'scid_e135':'int', 'scid_e150':'int', 
+                    'scid_e150cnt':'int'})
+
+                    # Counting CSUD OTH symptoms # Max is 11
+                    csud_oth_full_db['A1 Items'] = np.where(((csud_oth_full_db['scid_e58a'] == 3) | (csud_oth_full_db['scid_e58b'] == 3)), 1, 0)
+                    csud_oth_full_db['A2 Items'] = np.where(((csud_oth_full_db['scid_e66a'] == 3) | (csud_oth_full_db['scid_e66b'] == 3)), 1, 0)
+                    csud_oth_full_db['A3 Items'] = np.where(((csud_oth_full_db['scid_e74'] == 3)), 1, 0)
+                    csud_oth_full_db['A4 Items'] = np.where(((csud_oth_full_db['scid_e82'] == 3)), 1, 0)
+                    csud_oth_full_db['A5 Items'] = np.where(((csud_oth_full_db['scid_e90a'] == 3) | (csud_oth_full_db['scid_e90b'] == 3)), 1, 0)
+                    csud_oth_full_db['A6 Items'] = np.where(((csud_oth_full_db['scid_e98'] == 3)), 1, 0)
+                    csud_oth_full_db['A7 Items'] = np.where(((csud_oth_full_db['scid_e106'] == 3)), 1, 0)
+                    csud_oth_full_db['A8 Items'] = np.where(((csud_oth_full_db['scid_e114'] == 3)), 1, 0)
+                    csud_oth_full_db['A9 Items'] = np.where(((csud_oth_full_db['scid_e122a'] == 3) | (csud_oth_full_db['scid_e122b'] == 3)), 1, 0)
+                    csud_oth_full_db['A10 Items'] = np.where(((csud_oth_full_db['scid_e130a'] == 3) | (csud_oth_full_db['scid_e130b'] == 3)), 1, 0)
+                    csud_oth_full_db['A11 Items'] = np.where(((csud_oth_full_db['scid_e135'] == 3)), 1, 0)
+
+                    # Checking Criterion A Discrepancy # Needs to have at least 2 # checking against original eInterview count
+                    csud_oth_full_db['CSUD OTH Criterion A Discrepancy'] = np.where(((csud_oth_full_db['scid_e150cnt'] >= 2) & (csud_oth_full_db['scid_e150'] != 3)), "Problem", "Fine")
+
+                    # Checking Count Discrepancy
+                    csud_oth_full_db['New CSUD OTH Symptom Count'] = csud_oth_full_db.loc[:, ['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 'A10 Items', 'A11 Items']].sum(axis = 1)
+                    csud_oth_full_db['CSUD OTH Symptom Count Discrepancy'] = np.where(((csud_oth_full_db['New CSUD OTH Symptom Count'] != csud_oth_full_db['scid_e150cnt'])), "Problem", "Fine")
+
+                    # Getting the Count Items and the Dsicrepancy Items
+                    refined_csud_oth_db = csud_oth_full_db.loc[:, ['scid_interviewername', 'A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items',
+                    'A10 Items', 'A11 Items', 'scid_e150', 'scid_e150cnt', 'CSUD OTH Criterion A Discrepancy', 'New CSUD OTH Symptom Count', 'CSUD OTH Symptom Count Discrepancy']]
+
+                    # Getting Count Discrepancy direction and Value
+                    refined_csud_oth_db['Count Discrepancy Direction'] = np.where(((csud_oth_full_db['scid_e150cnt'] - csud_oth_full_db['New CSUD OTH Symptom Count']) > 0), "Original Count Larger", 
+                    np.where(((csud_oth_full_db['scid_e150cnt'] == csud_oth_full_db['New CSUD OTH Symptom Count'])), "Same", "New Count Larger"))
+                    refined_csud_oth_db['Count Discrepancy Value'] = csud_oth_full_db['scid_e150cnt'] - csud_oth_full_db['New CSUD OTH Symptom Count']
+
+                    # Getting Only "Problem Subjects"
+                    only_problem_children_csud_oth = refined_csud_oth_db.loc[((refined_csud_oth_db['CSUD OTH Symptom Count Discrepancy'] == "Problem") | (refined_csud_oth_db['CSUD OTH Criterion A Discrepancy'] == 'Problem'))]
+
+                    col1, col2 = st.columns(2)
+                    with col2:
+                            st.write("**Export Breakdown**")
+                            st.write("- In the SCID there is a Criterion A count item (scid_e150cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                    with col1:
+                        st.write("**Column Definitions:**")
+                        st.markdown("- **CSUD OTH Criterion A Discrepancy** - The Criterion A item (scid_e150) should only be marked 3 (threshold) if 2 or more symptoms are accounted for. This column checks to see if that is the case.")
+                        st.markdown("- **New CSUD OTH Symptom Count** - My new symptom count using the Ax Item columns.")
+                        st.markdown("- **CSUD OTH Symptom Count Discrepancy** - Checks whether the the scid criterion A count matches my manual count.")
+
+                    # Creating the framework to be able to see the corresponding interviewers
+                    interviewer_selection_csud_oth = st.checkbox("Would you like to see the associated interviewer?", key = 'csud_oth')
+                    if interviewer_selection_csud_oth:
+                        problem_children_csud_oth_final = only_problem_children_csud_oth[['scid_interviewername','A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'A11 Items', 'scid_e150', 'CSUD OTH Criterion A Discrepancy', 'scid_e150cnt', 'New CSUD OTH Symptom Count', 'CSUD OTH Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_oth_final)
+                        csv = convert_df(problem_children_csud_oth_final)
+                    else:
+                        problem_children_csud_oth_final = only_problem_children_csud_oth[['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'A11 Items', 'scid_e150', 'CSUD OTH Criterion A Discrepancy', 'scid_e150cnt', 'New CSUD OTH Symptom Count', 'CSUD OTH Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_oth_final)
+                        csv = convert_df(problem_children_csud_oth_final)
+                    
+                    column1, column2 = st.columns(2)
+                    with column1:
+                        st.write("Number of Problem Subjects:", len(problem_children_csud_oth_final.index))
+                        st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'csud_oth_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                    with column2:
+                        st.write("Number of Subjects with **New Count Larger**:", len(problem_children_csud_oth_final[problem_children_csud_oth_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                        st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_csud_oth_final[problem_children_csud_oth_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                    csud_oth_problem_subject_list = problem_children_csud_oth_final.index.values.tolist()
+                    see_more_csud_oth = st.multiselect("See Specific Subject Info? [Select as many as you would like]", csud_oth_problem_subject_list)
+                    interviewer_selection_csud_oth_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_csud_oth')
+                    if see_more_csud_oth is not None:
+                        if interviewer_selection_csud_oth_2:
+                            specific_csud_oth_subject_db = csud_oth_full_db.loc[see_more_csud_oth,:]
+                            specific_csud_oth_subject_db_2 = specific_csud_oth_subject_db.loc[:,['scid_interviewername','A1 Items', 'scid_e58a', 'scid_e58b', 'A2 Items', 'scid_e66a', 'scid_e66b',
+                            'A3 Items', 'scid_e74', 'A4 Items', 'scid_e82', 'A5 Items', 'scid_e90a', 'scid_e90b', 'A6 Items', 'scid_e98', 'A7 Items', 'scid_e106', 'A8 Items', 'scid_e114', 
+                            'A9 Items', 'scid_e122a', 'scid_e122b', 'A10 Items', 'scid_e130a', 'scid_e130b', 'A11 Items', 'scid_e135', 'scid_e150', 'scid_e150cnt', 'New CSUD OTH Symptom Count']]
+                            specific_csud_oth_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_oth_subject_db_2)
+                            csv = convert_df(specific_csud_oth_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_oth_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                        else:
+                            specific_csud_oth_subject_db = csud_oth_full_db.loc[see_more_csud_oth,:]
+                            specific_csud_oth_subject_db_2 = specific_csud_oth_subject_db.loc[:,['A1 Items', 'scid_e58a', 'scid_e58b', 'A2 Items', 'scid_e66a', 'scid_e66b',
+                            'A3 Items', 'scid_e74', 'A4 Items', 'scid_e82', 'A5 Items', 'scid_e90a', 'scid_e90b', 'A6 Items', 'scid_e98', 'A7 Items', 'scid_e106', 'A8 Items', 'scid_e114', 
+                            'A9 Items', 'scid_e122a', 'scid_e122b', 'A10 Items', 'scid_e130a', 'scid_e130b', 'A11 Items', 'scid_e135', 'scid_e150', 'scid_e150cnt', 'New CSUD OTH Symptom Count']]
+                            specific_csud_oth_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_oth_subject_db_2)
+                            csv = convert_df(specific_csud_oth_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_oth_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+            if module_e_syndrome_selection == 'PSUD':
+                st.markdown(f"### {module_e_syndrome_selection}")
+                st.markdown("---")
+                drug_selection_psud = st.selectbox("Which Drug would you like to look at?", ["---", "All", "Sed/Hyp/Anx", "Cannabis", "Stimulants", "Opioids", "Inhalants", "PCP", "Hallucinogens", "Other/Unknown"])
+                if drug_selection_psud == "---":
+                    st.write("Your options are as follows:")
+                    st.markdown("- **All** - See all of the CSUD problems.")
+                    st.markdown("- **Sed/Hyp/Anx**")
+                    st.markdown("- **Cannabis**")
+                    st.markdown("- **Stimulants**")
+                    st.markdown("- **Opioids**")
+                    st.markdown("- **Inhalants**")
+                    st.markdown("- **PCP**")
+                    st.markdown("- **Hallucinogens**")
+                    st.markdown("- **Other/Unknown**")
+                if drug_selection_psud == "All":
+                    st.markdown(f"#### {drug_selection_csud}")
+                    st.markdown("---")
+                if drug_selection_psud == "Sed/Hyp/Anx":
+                    st.markdown(f"#### {drug_selection_csud}")
+                    st.markdown("---")
+
+                    # Opening datafile
+                    full_db = pd.read_csv(full_data)
+                    module_e_items_db = pd.read_excel(module_e_file)
+                    
+                    # Selecting only module E items (including subject_id of course) [THIS IS ALL OF MODULE E]
+                    module_e_item_list = module_e_items_db['module_e_items'].values.tolist()
+                    final_list = ['subject_id', 'scid_interviewername'] + module_e_item_list
+
+                    module_e_db = full_db.loc[:, final_list]
+
+                    # CSUD Sed/Hyp/Anx # Just Checking Calculation errors
+                    csud_sed_full_db = module_e_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_e51a', 'scid_e51b', 'scid_e59a', 'scid_e59b', 'scid_e67', 'scid_e75', 'scid_e83a', 'scid_e83b', 'scid_e91', 'scid_e99',
+                    'scid_e107', 'scid_e115a', 'scid_e115b', 'scid_e123a', 'scid_e123b', 'scid_e131', 'scid_e136', 'scid_e136cnt']]
+
+                    # Setting index to subject_id
+                    csud_sed_full_db.set_index('subject_id', inplace = True)
+
+                    # Filling all na values with 0 in order to run comparisons
+                    csud_sed_full_db.fillna(0, inplace = True)
+
+                    # Have to convert 3u option in scid_e25 to just 3
+                    csud_sed_full_db['scid_e75'] = csud_sed_full_db['scid_e75'].replace("3u", "3")
+
+                    # Setting the scid variable to integers instead of floats as it's more legible
+                    csud_sed_full_db = csud_sed_full_db.astype({'scid_e51a':'int', 'scid_e51b':'int', 'scid_e59a':'int', 'scid_e59b':'int', 'scid_e67':'int', 'scid_e75':'int', 'scid_e83a':'int', 'scid_e83b':'int',
+                    'scid_e91':'int', 'scid_e99':'int', 'scid_e107':'int', 'scid_e115a':'int', 'scid_e115b':'int', 'scid_e123a':'int', 'scid_e123b':'int', 'scid_e131':'int', 'scid_e136':'int', 
+                    'scid_e136cnt':'int'})
+
+                    # Counting CSUD SED symptoms # Max is 11
+                    csud_sed_full_db['A1 Items'] = np.where(((csud_sed_full_db['scid_e51a'] == 3) | (csud_sed_full_db['scid_e51b'] == 3)), 1, 0)
+                    csud_sed_full_db['A2 Items'] = np.where(((csud_sed_full_db['scid_e59a'] == 3) | (csud_sed_full_db['scid_e59b'] == 3)), 1, 0)
+                    csud_sed_full_db['A3 Items'] = np.where(((csud_sed_full_db['scid_e67'] == 3)), 1, 0)
+                    csud_sed_full_db['A4 Items'] = np.where(((csud_sed_full_db['scid_e75'] == 3)), 1, 0)
+                    csud_sed_full_db['A5 Items'] = np.where(((csud_sed_full_db['scid_e83a'] == 3) | (csud_sed_full_db['scid_e83b'] == 3)), 1, 0)
+                    csud_sed_full_db['A6 Items'] = np.where(((csud_sed_full_db['scid_e91'] == 3)), 1, 0)
+                    csud_sed_full_db['A7 Items'] = np.where(((csud_sed_full_db['scid_e99'] == 3)), 1, 0)
+                    csud_sed_full_db['A8 Items'] = np.where(((csud_sed_full_db['scid_e107'] == 3)), 1, 0)
+                    csud_sed_full_db['A9 Items'] = np.where(((csud_sed_full_db['scid_e115a'] == 3) | (csud_sed_full_db['scid_e115b'] == 3)), 1, 0)
+                    csud_sed_full_db['A10 Items'] = np.where(((csud_sed_full_db['scid_e123a'] == 3) | (csud_sed_full_db['scid_e123b'] == 3)), 1, 0)
+                    csud_sed_full_db['A11 Items'] = np.where(((csud_sed_full_db['scid_e131'] == 3)), 1, 0)
+
+                    # Checking Criterion A Discrepancy # Needs to have at least 2 # checking against original eInterview count
+                    csud_sed_full_db['CSUD SED Criterion A Discrepancy'] = np.where(((csud_sed_full_db['scid_e136cnt'] >= 2) & (csud_sed_full_db['scid_e136'] != 3)), "Problem", "Fine")
+
+                    # Checking Count Discrepancy
+                    csud_sed_full_db['New CSUD SED Symptom Count'] = csud_sed_full_db.loc[:, ['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 'A10 Items', 'A11 Items']].sum(axis = 1)
+                    csud_sed_full_db['CSUD SED Symptom Count Discrepancy'] = np.where(((csud_sed_full_db['New CSUD SED Symptom Count'] != csud_sed_full_db['scid_e136cnt'])), "Problem", "Fine")
+
+                    # Getting the Count Items and the Dsicrepancy Items
+                    refined_csud_sed_db = csud_sed_full_db.loc[:, ['scid_interviewername', 'A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items',
+                    'A10 Items', 'A11 Items', 'scid_e136', 'scid_e136cnt', 'CSUD SED Criterion A Discrepancy', 'New CSUD SED Symptom Count', 'CSUD SED Symptom Count Discrepancy']]
+
+                    # Getting Count Discrepancy direction and Value
+                    refined_csud_sed_db['Count Discrepancy Direction'] = np.where(((csud_sed_full_db['scid_e136cnt'] - csud_sed_full_db['New CSUD SED Symptom Count']) > 0), "Original Count Larger", 
+                    np.where(((csud_sed_full_db['scid_e136cnt'] == csud_sed_full_db['New CSUD SED Symptom Count'])), "Same", "New Count Larger"))
+                    refined_csud_sed_db['Count Discrepancy Value'] = csud_sed_full_db['scid_e136cnt'] - csud_sed_full_db['New CSUD SED Symptom Count']
+
+                    # Getting Only "Problem Subjects"
+                    only_problem_children_csud_sed = refined_csud_sed_db.loc[((refined_csud_sed_db['CSUD SED Symptom Count Discrepancy'] == "Problem") | (refined_csud_sed_db['CSUD SED Criterion A Discrepancy'] == 'Problem'))]
+
+                    col1, col2 = st.columns(2)
+                    with col2:
+                            st.write("**Export Breakdown**")
+                            st.write("- In the SCID there is a Criterion A count item (scid_e136cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                    with col1:
+                        st.write("**Column Definitions:**")
+                        st.markdown("- **CSUD SED Criterion A Discrepancy** - The Criterion A item (scid_e136) should only be marked 3 (threshold) if 2 or more symptoms are accounted for. This column checks to see if that is the case.")
+                        st.markdown("- **New CSUD SED Symptom Count** - My new symptom count using the Ax Item columns.")
+                        st.markdown("- **CSUD SED Symptom Count Discrepancy** - Checks whether the the scid criterion A count matches my manual count.")
+
+                    # Creating the framework to be able to see the corresponding interviewers
+                    interviewer_selection_csud_sed = st.checkbox("Would you like to see the associated interviewer?", key = 'csud_sed')
+                    if interviewer_selection_csud_sed:
+                        problem_children_csud_sed_final = only_problem_children_csud_sed[['scid_interviewername','A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'A11 Items', 'scid_e136', 'CSUD SED Criterion A Discrepancy', 'scid_e136cnt', 'New CSUD SED Symptom Count', 'CSUD SED Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_sed_final)
+                        csv = convert_df(problem_children_csud_sed_final)
+                    else:
+                        problem_children_csud_sed_final = only_problem_children_csud_sed[['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 
+                        'A10 Items', 'A11 Items', 'scid_e136', 'CSUD SED Criterion A Discrepancy', 'scid_e136cnt', 'New CSUD SED Symptom Count', 'CSUD SED Symptom Count Discrepancy', 'Count Discrepancy Direction', 
+                        'Count Discrepancy Value']]
+                        st.write(problem_children_csud_sed_final)
+                        csv = convert_df(problem_children_csud_sed_final)
+                    
+                    column1, column2 = st.columns(2)
+                    with column1:
+                        st.write("Number of Problem Subjects:", len(problem_children_csud_sed_final.index))
+                        st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'csud_sed_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                    with column2:
+                        st.write("Number of Subjects with **New Count Larger**:", len(problem_children_csud_sed_final[problem_children_csud_sed_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                        st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_csud_sed_final[problem_children_csud_sed_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                    csud_sed_problem_subject_list = problem_children_csud_sed_final.index.values.tolist()
+                    see_more_csud_sed = st.multiselect("See Specific Subject Info? [Select as many as you would like]", csud_sed_problem_subject_list)
+                    interviewer_selection_csud_sed_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_csud_sed')
+                    if see_more_csud_sed is not None:
+                        if interviewer_selection_csud_sed_2:
+                            specific_csud_sed_subject_db = csud_sed_full_db.loc[see_more_csud_sed,:]
+                            specific_csud_sed_subject_db_2 = specific_csud_sed_subject_db.loc[:,['scid_interviewername','A1 Items', 'scid_e51a', 'scid_e51b', 'A2 Items', 'scid_e59a', 'scid_e59b',
+                            'A3 Items', 'scid_e67', 'A4 Items', 'scid_e75', 'A5 Items', 'scid_e83a', 'scid_e83b', 'A6 Items', 'scid_e91', 'A7 Items', 'scid_e99', 'A8 Items', 'scid_e107', 
+                            'A9 Items', 'scid_e115a', 'scid_e115b', 'A10 Items', 'scid_e123a', 'scid_e123b', 'A11 Items', 'scid_e131', 'scid_e136', 'scid_e136cnt', 'New CSUD SED Symptom Count']]
+                            specific_csud_sed_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_sed_subject_db_2)
+                            csv = convert_df(specific_csud_sed_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_sed_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                        else:
+                            specific_csud_sed_subject_db = csud_sed_full_db.loc[see_more_csud_sed,:]
+                            specific_csud_sed_subject_db_2 = specific_csud_sed_subject_db.loc[:,['A1 Items', 'scid_e51a', 'scid_e51b', 'A2 Items', 'scid_e59a', 'scid_e59b',
+                            'A3 Items', 'scid_e67', 'A4 Items', 'scid_e75', 'A5 Items', 'scid_e83a', 'scid_e83b', 'A6 Items', 'scid_e91', 'A7 Items', 'scid_e99', 'A8 Items', 'scid_e107', 
+                            'A9 Items', 'scid_e115a', 'scid_e115b', 'A10 Items', 'scid_e123a', 'scid_e123b', 'A11 Items', 'scid_e131', 'scid_e136', 'scid_e136cnt', 'New CSUD SED Symptom Count']]
+                            specific_csud_sed_subject_db_2.sort_values('subject_id', inplace=True)
+                            st.write(specific_csud_sed_subject_db_2)
+                            csv = convert_df(specific_csud_sed_subject_db_2)
+                            st.download_button("Download Data as a CSV", data = csv, file_name=f'csud_sed_problem_subject_more_depth_{today}.csv', mime = 'text/csv')  
         if module_selection == "Module F":
             st.write("hello")
         if module_selection == 'Module K':
