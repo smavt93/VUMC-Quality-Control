@@ -8,6 +8,7 @@ module_a_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Modul
 module_e_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20E%20Items.xlsx?raw=true'
 module_f_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20F%20Items.xlsx?raw=true'
 module_k_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20K%20Items.xlsx?raw=true'
+module_c_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20C%20Items.xlsx?raw=true'
 
 # Markdown Info
 first_selection = st.sidebar.selectbox("What would you like to do?", ["---", "Symptom Counts", "Second Level Diagnosis Check"])
@@ -957,14 +958,14 @@ if first_selection == 'Symptom Counts':
                 
                 interviewer_selection_pdd = st.checkbox("Would you like to see the associated interviewer?", key = 'pdd')
                 if interviewer_selection_pdd:
-                    problem_children_pdd_final = only_problem_children_pdd[['scid_interviewername', 'B1 Items', 'B2 Items', 'B3 Items', 'B4 Items','scid_a178', 'PDD Criterion B Discrepancy', 'scid_a178cnt', 
+                    problem_children_pdd_final = only_problem_children_pdd.loc[:, ['scid_interviewername', 'B1 Items', 'B2 Items', 'B3 Items', 'B4 Items','scid_a178', 'PDD Criterion B Discrepancy', 'scid_a178cnt', 
                     'New PDD Symptom Count (B)', 'Count Discrepancy Direction (B)', 'Count Discrepancy Value (B)', 'C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items',
                     'C6 Items', 'C7 Items', 'scid_a186', 'PDD Criterion C Discrepancy', 'scid_a187', 'PDD Criterion B+C Discrepancy', 'scid_a187cnt', 'New PDD Symptom Count (B+C)', 'Count Discrepancy Direction (B+C)',
                     'Count Discrepancy Value (B+C)']]
                     st.write(problem_children_pdd_final)
                     csv = convert_df(problem_children_pdd_final)
                 else:
-                    problem_children_pdd_final = only_problem_children_pdd[['B1 Items', 'B2 Items', 'B3 Items', 'B4 Items','scid_a178', 'PDD Criterion B Discrepancy', 'scid_a178cnt', 
+                    problem_children_pdd_final = only_problem_children_pdd.loc[:, ['B1 Items', 'B2 Items', 'B3 Items', 'B4 Items','scid_a178', 'PDD Criterion B Discrepancy', 'scid_a178cnt', 
                     'New PDD Symptom Count (B)', 'Count Discrepancy Direction (B)', 'Count Discrepancy Value (B)', 'C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items',
                     'C6 Items', 'C7 Items', 'scid_a186', 'PDD Criterion C Discrepancy', 'scid_a187', 'PDD Criterion B+C Discrepancy', 'scid_a187cnt', 'New PDD Symptom Count (B+C)', 'Count Discrepancy Direction (B+C)',
                     'Count Discrepancy Value (B+C)']]
@@ -3849,13 +3850,13 @@ if first_selection == 'Symptom Counts':
                 # Creating the framework to be able to see the corresponding interviewers
                 interviewer_selection_adhd_ina = st.checkbox("Would you like to see the associated interviewer?", key = 'adhd_ina')
                 if interviewer_selection_adhd_ina:
-                    problem_children_adhd_ina_final = only_problem_children_adhd_ina[['scid_interviewername', 'Inattention A', 'Inattention B', 'Inattention C', 'Inattention D', 'Inattention E', 'Inattention F', 'Inattention G', 
+                    problem_children_adhd_ina_final = only_problem_children_adhd_ina.loc[:, ['scid_interviewername', 'Inattention A', 'Inattention B', 'Inattention C', 'Inattention D', 'Inattention E', 'Inattention F', 'Inattention G', 
                     'Inattention H', 'Inattention I' 'scid_k13', 'ADHD Inattention Criteria Discrepancy', 'scid_k13cnt', 'New ADHD INA Symptom Count', 'ADHD INA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
                     problem_children_adhd_ina_final.sort_values('subject_id', inplace = True)
                     st.write(problem_children_adhd_ina_final)
                     csv = convert_df(problem_children_adhd_ina_final)
                 else:
-                    problem_children_adhd_ina_final = only_problem_children_adhd_ina[['Inattention A', 'Inattention B', 'Inattention C', 'Inattention D', 'Inattention E', 'Inattention F', 'Inattention G', 
+                    problem_children_adhd_ina_final = only_problem_children_adhd_ina.loc[:, ['Inattention A', 'Inattention B', 'Inattention C', 'Inattention D', 'Inattention E', 'Inattention F', 'Inattention G', 
                     'Inattention H', 'Inattention I', 'scid_k13', 'ADHD Inattention Criteria Discrepancy', 'scid_k13cnt', 'New ADHD INA Symptom Count', 'ADHD INA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
                     problem_children_adhd_ina_final.sort_values('subject_id', inplace = True)
                     st.write(problem_children_adhd_ina_final)
@@ -4004,4 +4005,56 @@ if first_selection == 'Symptom Counts':
                         csv = convert_df(specific_adhd_hyp_subject_db_2)
                         st.download_button("Download Data as a CSV", data = csv, file_name=f'adhd_hyp_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
         if module_selection == "Module C":
-            st.write("Hello")
+            module_c_syndrome_selection = st.sidebar.selectbox("Which disorder would you like to look at?", ["---", "Schizophrenia", "Schizphreniform Disorder", "Brief Psychotic Disorder"])
+            st.markdown(f"## {module_selection}")
+            st.markdown("---")
+            if module_c_syndrome_selection == "---":
+                st.markdown("### Options:")
+                st.markdown("- **'Schizphrenia'** - Checking catatonia count!")
+                st.markdown("- **'Schizophreniform Disorder'** -- Checking catatonia count!")
+                st.markdown("- **'Brief Psychotic Disorder'** - Checking catatonia count!")
+            if module_c_syndrome_selection == "Schizophrenia":
+                st.markdown(f"#### {module_c_syndrome_selection}")
+                st.markdown("---")
+
+                # Opening datafile
+                full_db = pd.read_csv(full_data)
+                module_c_items_db = pd.read_excel(module_c_file)
+                
+                # Selecting only module C items and Catatonia Items from Module B (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE C]
+                module_c_item_list = module_k_items_db['module_k_items'].values.tolist()
+                catatonia_list = ['scid_b27', 'scid_b28', 'scid_b29', 'scid_b30', 'scid_b31', 'scid_b32', 'scid_b33', 'scid_b34', 'scid_b35', 'scid_b36', 'scid_b37', 'scid_b38']
+                final_list = ['subject_id', 'scid_interviewername'] + catatonia_list + module_k_item_list
+
+                module_c_db = full_db.loc[:, final_list]
+
+                # Schizophrenia # Just Checking Calculation errors
+                schizo_full_db = module_c_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_b27', 'scid_b28', 'scid_b29', 'scid_b30', 'scid_b31', 'scid_b32', 'scid_b33', 'scid_b34', 
+                'scid_b35', 'scid_b36', 'scid_b37', 'scid_b38', 'scid_c10', 'scid_c11', 'scid_c11cnt']]
+
+                # Setting index to subject_id
+                schizo_full_db.set_index('subject_id', inplace = True)
+
+                # Filling all the na values with 0 in order to run comparisons
+                schizo_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variables to integers instead of floats as it is more readable
+                schizo_full_db = schizo_full_db.astype({'scid_b27':'int', 'scid_b28':'int', 'scid_b29':'int', 'scid_b30':'int', 'scid_b31':'int', 'scid_b32':'int', 'scid_b33':'int', 'scid_b34':'int', 
+                'scid_b35':'int', 'scid_b36':'int', 'scid_b37':'int', 'scid_b38':'int', 'scid_c10':'int', 'scid_c11':'int', 'scid_c11cnt':'int'})
+
+                # Counting Catatonia Items # Max is 12
+                schizo_full_db['Stupor'] = np.where((schizo_full_db['scid_b27'] == 3), 1, 0)
+                schizo_full_db['Grimacing'] = np.where((schizo_full_db['scid_b28'] == 3), 1, 0)
+                schizo_full_db['Mannerism'] = np.where((schizo_full_db['scid_b29'] == 3), 1, 0)
+                schizo_full_db['Posturing'] = np.where((schizo_full_db['scid_b30'] == 3), 1, 0)
+                schizo_full_db['Agitation'] = np.where((schizo_full_db['scid_b31'] == 3), 1, 0)
+                schizo_full_db['Stereotype'] = np.where((schizo_full_db['scid_b32'] == 3), 1, 0)
+                schizo_full_db['Mutism'] = np.where((schizo_full_db['scid_b33'] == 3), 1, 0)
+                schizo_full_db['Echolalia'] = np.where((schizo_full_db['scid_b34'] == 3), 1, 0)
+                schizo_full_db['Negativism'] = np.where((schizo_full_db['scid_b35'] == 3), 1, 0)
+                schizo_full_db['Echopraxia'] = np.where((schizo_full_db['scid_b36'] == 3), 1, 0)
+                schizo_full_db['Catalepsy'] = np.where((schizo_full_db['scid_b37'] == 3), 1, 0)
+                schizo_full_db['Waxy Flexibility'] = np.where((schizo_full_db['scid_b38'] == 3), 1, 0)
+
+                # Checking the With Catatonia item of Schizophreniam # Needs to have 3 or more catatonic items to be present
+                schizo_full_db['W/ CATA SCHIZOPHRENIA Discrepancy'] = np.where((((schizo_full_db['scid_c11'] == 1) & (schizo_full_db['scid_c11cnt'] < 3)) | ((schizo_full_db['scid_c10'] == 3) & (schizo_full_db['scid_c11cnt'] >= 3) & (schizo_full_db['scid_c11'] != 1))), "Problem", "Fine")
