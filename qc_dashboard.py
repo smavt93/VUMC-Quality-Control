@@ -6,7 +6,8 @@ from datetime import date
 # Files used later (set up)
 module_a_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20A%20Items.xlsx?raw=true'
 module_e_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20E%20Items.xlsx?raw=true'
-module_f_file = ''
+module_f_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20F%20Items.xlsx?raw=true'
+module_k_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20K%20Items.xlsx?raw=true'
 
 # Markdown Info
 first_selection = st.sidebar.selectbox("What would you like to do?", ["---", "Symptom Counts", "Second Level Diagnosis Check"])
@@ -2431,7 +2432,7 @@ if first_selection == 'Symptom Counts':
                     psud_sed_full_db['New PSUD SED Symptom Count'] = psud_sed_full_db.loc[:, ['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items', 'A10 Items', 'A11 Items']].sum(axis = 1)
                     psud_sed_full_db['PSUD SED Symptom Count Discrepancy'] = np.where(((psud_sed_full_db['New PSUD SED Symptom Count'] != psud_sed_full_db['scid_e299cnt'])), "Problem", "Fine")
 
-                    # Getting the Count Items and the Dsicrepancy Items
+                    # Getting the Count Items and the Discrepancy Items
                     refined_psud_sed_db = psud_sed_full_db.loc[:, ['scid_interviewername', 'A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'A6 Items', 'A7 Items', 'A8 Items', 'A9 Items',
                     'A10 Items', 'A11 Items', 'scid_e299', 'scid_e299cnt', 'PSUD SED Criterion A Discrepancy', 'New PSUD SED Symptom Count', 'PSUD SED Symptom Count Discrepancy']]
 
@@ -3327,28 +3328,680 @@ if first_selection == 'Symptom Counts':
                 st.markdown("- **'CGAD'** - Current Generalized Anxiety Disorder")
                 st.markdown("- **'PGAD'** - Past Generalized Anxiety Disorder")
             if module_f_syndrome_selection == "Panic Attack":
-                st.markdown(f"{module_f_syndrome_selection}")
+                st.markdown(f"#### {module_f_syndrome_selection}")
                 st.markdown("---")
 
                 # Opening datafile
                 full_db = pd.read_csv(full_data)
                 module_f_items_db = pd.read_excel(module_f_file)
                 
-                # Selecting only module F items (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE E]
+                # Selecting only module F items (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE F]
                 module_f_item_list = module_f_items_db['module_f_items'].values.tolist()
                 final_list = ['subject_id', 'scid_interviewername'] + module_f_item_list
 
                 module_f_db = full_db.loc[:, final_list]
 
                 # Panic Attack # Just Checking Calculation errors
-                pa_full_db = module_f_db.loc[:, []]
+                pa_full_db = module_f_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_f2', 'scid_f3', 'scid_f4', 'scid_f5', 'scid_f6', 'scid_f7', 'scid_f8', 'scid_f9', 'scid_f10',
+                'scid_f11', 'scid_f12', 'scid_f13a', 'scid_f13b', 'scid_f14', 'scid_f15', 'scid_f16', 'scid_f16cnt']]
+
+                # Setting index to subject_id
+                pa_full_db.set_index("subject_id", inplace = True)
+
+                # Filling all na values with 0 in order to run comparisons
+                pa_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variable to integers instead of floats as it's more readable
+                pa_full_db = pa_full_db.astype({'scid_f2':'int', 'scid_f3':'int', 'scid_f4':'int', 'scid_f5':'int', 'scid_f6':'int', 'scid_f7':'int', 'scid_f8':'int', 'scid_f9':'int', 'scid_f10':'int',
+                'scid_f11':'int', 'scid_f12':'int', 'scid_f13a':'int', 'scid_f13b':'int', 'scid_f14':'int', 'scid_f15':'int', 'scid_f16':'int', 'scid_f16cnt':'int'})
+
+                # Counting Panic Attack Symptoms # Max is 13 (Not counting sudden symptoms)
+                pa_full_db['Sudden Symptoms'] = np.where(((pa_full_db['scid_f2'] == 3)), 1, 0)
+                pa_full_db['Palpitations'] = np.where(((pa_full_db['scid_f3'] == 3)), 1, 0)
+                pa_full_db['Sweating'] = np.where(((pa_full_db['scid_f4'] == 3)), 1 ,0)
+                pa_full_db['Trembling'] = np.where(((pa_full_db['scid_f5'] == 3)), 1, 0)
+                pa_full_db['Shortness of Breath'] = np.where(((pa_full_db['scid_f6'] == 3)), 1 ,0)
+                pa_full_db['Choking'] = np.where(((pa_full_db['scid_f7'] == 3)), 1, 0)
+                pa_full_db['Chest Pain'] = np.where(((pa_full_db['scid_f8'] == 3)), 1, 0)
+                pa_full_db['Nausea'] = np.where(((pa_full_db['scid_f9'] == 3)), 1, 0)
+                pa_full_db['Dizzy'] = np.where(((pa_full_db['scid_f10'] == 3)), 1, 0)
+                pa_full_db['Flushes or Chills'] = np.where(((pa_full_db['scid_f11'] == 3)), 1, 0)
+                pa_full_db['Paresthesias'] = np.where(((pa_full_db['scid_f12'] == 3)), 1 , 0)
+                pa_full_db['Depersonalization/Derealization'] = np.where(((pa_full_db['scid_f13a'] == 3) | (pa_full_db['scid_f13b'] == 3)), 1, 0)
+                pa_full_db['Fear of Losing Control'] = np.where(((pa_full_db['scid_f14'] == 3)), 1, 0)
+                pa_full_db['Fear of Dying'] = np.where(((pa_full_db['scid_f15'] == 3)), 1, 0)
+
+                # Checking the Panic Attack Criteria Discrepancy # Need to have 4 or more symptoms with one of them being sudden symptoms (scid_f2) # Checking against original eInterview Count
+                pa_full_db['PA Criteria Discrepancy'] = np.where((((pa_full_db['scid_f16cnt'] >= 4) & (pa_full_db['scid_f2'] == 3) & (pa_full_db['scid_f16'] != 3)) |
+                ((pa_full_db['scid_f16cnt'] < 4) & (pa_full_db['scid_f2'] == 3) & (pa_full_db['scid_f16'] == 3)) | ((pa_full_db['scid_f16cnt'] < 4) & (pa_full_db['scid_f2'] != 3) & (pa_full_db['scid_f16'] == 3)) |
+                ((pa_full_db['scid_f16cnt'] >= 4) & (pa_full_db['scid_f2'] != 3) & (pa_full_db['scid_f16'] == 3))), "Problem", "Fine")
+
+                # Checking Count Discrepancy
+                pa_full_db['New PA Symptom Count'] = pa_full_db.loc[:, ['Palpitations', 'Sweating', 'Trembling', 'Shortness of Breath', 'Choking', 'Chest Pain', 'Nausea', 'Dizzy', 'Flushes or Chills',
+                'Paresthesias', 'Depersonalization/Derealization', 'Fear of Losing Control', 'Fear of Dying']].sum(axis = 1)
+                pa_full_db['PA Symptom Count Discrepancy'] = np.where(((pa_full_db['scid_f16cnt'] != pa_full_db['New PA Symptom Count'])), "Problem", "Fine")
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_pa_db = pa_full_db.loc[:, ['scid_interviewername', 'Sudden Symptoms', 'Palpitations', 'Sweating', 'Trembling', 'Shortness of Breath', 'Choking', 'Chest Pain', 'Nausea', 
+                'Dizzy', 'Flushes or Chills', 'Paresthesias', 'Depersonalization/Derealization', 'Fear of Losing Control', 'Fear of Dying', 'scid_f16', 'scid_f16cnt', 'PA Criteria Discrepancy',
+                'New PA Symptom Count', 'PA Symptom Count Discrepancy']]
+
+                # Getting Count Discrepancy and Value
+                refined_pa_db['Count Discrepancy Direction'] = np.where(((refined_pa_db['scid_f16cnt'] - refined_pa_db['New PA Symptom Count']) > 0), "Original Count Larger", 
+                np.where(((refined_pa_db['scid_f16cnt'] == refined_pa_db['New PA Symptom Count'])), "Same", "New Count Larger"))
+                refined_pa_db['Count Discrepancy Value'] = refined_pa_db['scid_f16cnt'] - refined_pa_db['New PA Symptom Count']
+
+                # Getting only "Problem Subjects"
+                only_problem_children_pa = refined_pa_db.loc[((refined_pa_db['PA Criteria Discrepancy'] == "Problem") | (refined_pa_db['PA Symptom Count Discrepancy'] == "Problem"))]
+
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a Panic Attack item (scid_f16cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **PA Criteria Discrepancy** - The Panic Attack item (scid_f16) should only be marked 3 (threshold) if 4 or more symptoms are accounted for and the sudden symptoms item (scid_f2) is threshold (3). This column checks to see if that is the case.")
+                    st.markdown("- **New PA Symptom Count** - My new symptom count using the Panic attack Item columns.")
+                    st.markdown("- **PA Symptom Count Discrepancy** - Checks whether the the scid Panic Attack Symptom count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_pa = st.checkbox("Would you like to see the associated interviewer?", key = 'pa')
+                if interviewer_selection_pa:
+                    problem_children_pa_final = only_problem_children_pa[['scid_interviewername', 'Sudden Symptoms', 'Palpitations', 'Sweating', 'Trembling', 'Shortness of Breath', 'Choking', 
+                    'Chest Pain', 'Nausea', 'Dizzy', 'Flushes or Chills', 'Paresthesias', 'Depersonalization/Derealization', 'Fear of Losing Control', 'Fear of Dying', 'scid_f16', 
+                    'PA Criteria Discrepancy', 'scid_f16cnt', 'New PA Symptom Count', 'PA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    st.write(problem_children_pa_final)
+                    csv = convert_df(problem_children_pa_final)
+                else:
+                    problem_children_pa_final = only_problem_children_pa[['Sudden Symptoms', 'Palpitations', 'Sweating', 'Trembling', 'Shortness of Breath', 'Choking', 
+                    'Chest Pain', 'Nausea', 'Dizzy', 'Flushes or Chills', 'Paresthesias', 'Depersonalization/Derealization', 'Fear of Losing Control', 'Fear of Dying', 'scid_f16', 
+                    'PA Criteria Discrepancy', 'scid_f16cnt', 'New PA Symptom Count', 'PA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    st.write(problem_children_pa_final)
+                    csv = convert_df(problem_children_pa_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_pa_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'pa_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_pa_final[problem_children_pa_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_pa_final[problem_children_pa_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                pa_problem_subject_list = problem_children_pa_final.index.values.tolist()
+                see_more_pa = st.multiselect("See Specific Subject Info? [Select as many as you would like]", pa_problem_subject_list)
+                interviewer_selection_pa_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_pa')
+                if see_more_pa is not None:
+                    if interviewer_selection_pa_2:
+                        specific_pa_subject_db = pa_full_db.loc[see_more_pa,:]
+                        specific_pa_subject_db_2 = specific_pa_subject_db.loc[:,['scid_interviewername','Sudden Symptoms', 'scid_f2', 'Palpitations', 'scid_f3',
+                        'Sweating', 'scid_f4', 'Trembling', 'scid_f5', 'Shortness of Breath', 'scid_f6', 'Choking', 'scid_f7', 'Chest Pain', 'scid_f8', 'Nausea', 'scid_f9', 
+                        'Dizzy', 'scid_f10', 'Flushes or Chills', 'scid_f11', 'Paresthesias', 'scid_f12', 'Depersonalization/Derealization', 'scid_f13a', 'scid_f13b',
+                        'Fear of Losing Control', 'scid_f14', 'Fear of Dying', 'scid_f15', 'scid_f16', 'scid_f16cnt', 'New PA Symptom Count']]
+                        specific_pa_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_pa_subject_db_2)
+                        csv = convert_df(specific_pa_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'pa_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_pa_subject_db = pa_full_db.loc[see_more_pa,:]
+                        specific_pa_subject_db_2 = specific_pa_subject_db.loc[:,['Sudden Symptoms', 'scid_f2', 'Palpitations', 'scid_f3',
+                        'Sweating', 'scid_f4', 'Trembling', 'scid_f5', 'Shortness of Breath', 'scid_f6', 'Choking', 'scid_f7', 'Chest Pain', 'scid_f8', 'Nausea', 'scid_f9', 
+                        'Dizzy', 'scid_f10', 'Flushes or Chills', 'scid_f11', 'Paresthesias', 'scid_f12', 'Depersonalization/Derealization', 'scid_f13a', 'scid_f13b',
+                        'Fear of Losing Control', 'scid_f14', 'Fear of Dying', 'scid_f15', 'scid_f16', 'scid_f16cnt', 'New PA Symptom Count']]
+                        specific_pa_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_pa_subject_db_2)
+                        csv = convert_df(specific_pa_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'pa_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
             if module_f_syndrome_selection == "Agoraphobia":
-                st.write("Hello")
+                st.markdown(f"#### {module_f_syndrome_selection}")
+                st.markdown("---")
+
+                # Opening datafile
+                full_db = pd.read_csv(full_data)
+                module_f_items_db = pd.read_excel(module_f_file)
+                
+                # Selecting only module F items (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE F]
+                module_f_item_list = module_f_items_db['module_f_items'].values.tolist()
+                final_list = ['subject_id', 'scid_interviewername'] + module_f_item_list
+
+                module_f_db = full_db.loc[:, final_list]
+
+                # Agoraphobia # Just Checking Calculation errors
+                agora_full_db = module_f_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_f44', 'scid_f45', 'scid_f46', 'scid_f47', 'scid_f48', 'scid_f49', 'scid_f49cnt']]
+
+                # Setting index to subject_id
+                agora_full_db.set_index("subject_id", inplace = True)
+
+                # Filling all na values with 0 in order to run comparisons
+                agora_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variable to integers instead of floats as it's more readable
+                agora_full_db = agora_full_db.astype({'scid_f44':'int', 'scid_f45':'int', 'scid_f46':'int', 'scid_f47':'int', 'scid_f48':'int', 'scid_f49':'int', 'scid_f49cnt':'int'})
+
+                # Counting Agoraphobia Criterion A # Max is 5
+                agora_full_db['A1 Items'] = np.where(((agora_full_db['scid_f44'] == 3)), 1, 0)
+                agora_full_db['A2 Items'] = np.where(((agora_full_db['scid_f45'] == 3)), 1, 0)
+                agora_full_db['A3 Items'] = np.where(((agora_full_db['scid_f46'] == 3)), 1 ,0)
+                agora_full_db['A4 Items'] = np.where(((agora_full_db['scid_f47'] == 3)), 1, 0)
+                agora_full_db['A5 Items'] = np.where(((agora_full_db['scid_f48'] == 3)), 1 ,0)
+
+                # Checking the Agoraphobia Criterion A Discrepancy # Need to have 2 or more symptoms) # Checking against original eInterview Count
+                agora_full_db['AGORA Criterion A Discrepancy'] = np.where((((agora_full_db['scid_f49cnt'] >= 2) & (agora_full_db['scid_f49'] != 3)) |
+                ((agora_full_db['scid_f49cnt'] < 2) & (agora_full_db['scid_f49'] == 3))), "Problem", "Fine")
+
+                # Checking Count Discrepancy
+                agora_full_db['New AGORA Symptom Count'] = agora_full_db.loc[:, ['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items']].sum(axis = 1)
+                agora_full_db['AGORA Symptom Count Discrepancy'] = np.where(((agora_full_db['scid_f49cnt'] != agora_full_db['New AGORA Symptom Count'])), "Problem", "Fine")
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_agora_db = agora_full_db.loc[:, ['scid_interviewername', 'A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'scid_f49', 'scid_f49cnt', 'AGORA Criterion A Discrepancy',
+                'New AGORA Symptom Count', 'AGORA Symptom Count Discrepancy']]
+
+                # Getting Count Discrepancy and Value
+                refined_agora_db['Count Discrepancy Direction'] = np.where(((refined_agora_db['scid_f49cnt'] - refined_agora_db['New AGORA Symptom Count']) > 0), "Original Count Larger", 
+                np.where(((refined_agora_db['scid_f49cnt'] == refined_agora_db['New AGORA Symptom Count'])), "Same", "New Count Larger"))
+                refined_agora_db['Count Discrepancy Value'] = refined_agora_db['scid_f49cnt'] - refined_agora_db['New AGORA Symptom Count']
+
+                # Getting only "Problem Subjects"
+                only_problem_children_agora = refined_agora_db.loc[((refined_agora_db['AGORA Criterion A Discrepancy'] == "Problem") | (refined_agora_db['AGORA Symptom Count Discrepancy'] == "Problem"))]
+                
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a Criteria A item (scid_f49cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **AGORA Criterion A Discrepancy** - The Criterion A item (sciaxd_f49) should only be marked 3 (threshold) if 2 or more symptoms are accounted for. This column checks to see if that is the case.")
+                    st.markdown("- **New AGORA Symptom Count** - My new symptom count using the Panic attack Item columns.")
+                    st.markdown("- **AGORA Symptom Count Discrepancy** - Checks whether the the scid Criterion A count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_agora = st.checkbox("Would you like to see the associated interviewer?", key = 'agora')
+                if interviewer_selection_agora:
+                    problem_children_agora_final = only_problem_children_agora.loc[:, ['scid_interviewername', 'A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'scid_f49', 
+                    'AGORA Criterion A Discrepancy', 'scid_f49cnt', 'New AGORA Symptom Count', 'AGORA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_agora_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_agora_final)
+                    csv = convert_df(problem_children_agora_final)
+                else:
+                    problem_children_agora_final = only_problem_children_agora.loc[:, ['A1 Items', 'A2 Items', 'A3 Items', 'A4 Items', 'A5 Items', 'scid_f49', 'AGORA Criterion A Discrepancy',
+                    'scid_f49cnt', 'New AGORA Symptom Count', 'AGORA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_agora_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_agora_final)
+                    csv = convert_df(problem_children_agora_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_agora_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'agora_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_agora_final[problem_children_agora_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_agora_final[problem_children_agora_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                pa_problem_subject_list = problem_children_agora_final.index.values.tolist()
+                see_more_agora = st.multiselect("See Specific Subject Info? [Select as many as you would like]", pa_problem_subject_list)
+                interviewer_selection_agora_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_agora')
+                if see_more_agora is not None:
+                    if interviewer_selection_agora_2:
+                        specific_agora_subject_db = agora_full_db.loc[see_more_agora,:]
+                        specific_agora_subject_db_2 = specific_agora_subject_db.loc[:,['scid_interviewername','A1 Items', 'scid_f44', 'A2 Items', 'scid_f45',
+                        'A3 Items', 'scid_f46', 'A4 Items', 'scid_f47', 'A5 Items', 'scid_f48', 'scid_f49', 'scid_f49cnt', 'New AGORA Symptom Count']]
+                        specific_agora_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_agora_subject_db_2)
+                        csv = convert_df(specific_agora_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'agora_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_agora_subject_db = agora_full_db.loc[see_more_agora,:]
+                        specific_agora_subject_db_2 = specific_agora_subject_db.loc[:,['A1 Items', 'scid_f44', 'A2 Items', 'scid_f45',
+                        'A3 Items', 'scid_f46', 'A4 Items', 'scid_f47', 'A5 Items', 'scid_f48', 'scid_f49', 'scid_f49cnt', 'New AGORA Symptom Count']]
+                        specific_agora_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_agora_subject_db_2)
+                        csv = convert_df(specific_agora_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'agora_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
             if module_f_syndrome_selection == "CGAD":
-                st.write("Hello")
+                st.markdown(f"#### {module_f_syndrome_selection}")
+                st.markdown("---")
+
+                # Opening datafile
+                full_db = pd.read_csv(full_data)
+                module_f_items_db = pd.read_excel(module_f_file)
+                
+                # Selecting only module F items (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE F]
+                module_f_item_list = module_f_items_db['module_f_items'].values.tolist()
+                final_list = ['subject_id', 'scid_interviewername'] + module_f_item_list
+
+                module_f_db = full_db.loc[:, final_list]
+
+                # CGAD # Just Checking Calculation errors
+                cgad_full_db = module_f_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_f114', 'scid_f115', 'scid_f116', 'scid_f117', 'scid_f118', 'scid_f119', 'scid_f120', 'scid_f120cnt', 'scid_f120s']]
+
+                # Setting index to subject_id
+                cgad_full_db.set_index("subject_id", inplace = True)
+
+                # Filling all na values with 0 in order to run comparisons
+                cgad_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variable to integers instead of floats as it's more readable
+                cgad_full_db = cgad_full_db.astype({'scid_f114':'int', 'scid_f115':'int', 'scid_f116':'int', 'scid_f117':'int', 'scid_f118':'int', 'scid_f119':'int', 'scid_f120':'int',
+                'scid_f120cnt':'int', 'scid_f120s':'int'})
+
+                # Counting CGAD Criterion C # Max is 6
+                cgad_full_db['C1 Items'] = np.where(((cgad_full_db['scid_f114'] == 3)), 1, 0)
+                cgad_full_db['C2 Items'] = np.where(((cgad_full_db['scid_f115'] == 3)), 1, 0)
+                cgad_full_db['C3 Items'] = np.where(((cgad_full_db['scid_f116'] == 3)), 1 ,0)
+                cgad_full_db['C4 Items'] = np.where(((cgad_full_db['scid_f117'] == 3)), 1, 0)
+                cgad_full_db['C5 Items'] = np.where(((cgad_full_db['scid_f118'] == 3)), 1 ,0)
+                cgad_full_db['C6 Items'] = np.where(((cgad_full_db['scid_f119'] == 3)), 1 ,0)
+
+                # Checking the CGAD Criterion C Discrepancy # Need to have 3 or more symptoms # Checking against original eInterview Count
+                cgad_full_db['CGAD Criterion C Discrepancy'] = np.where(((cgad_full_db['scid_f120cnt'] >= 3) & (cgad_full_db['scid_f120'] != 3) & (cgad_full_db['scid_f120s'] == 4)), "Problem",
+                np.where(((cgad_full_db['scid_f120'] == 3) & (cgad_full_db['scid_f120cnt'] < 3)), "Problem", "Fine"))
+
+                # Checking Count Discrepancy
+                cgad_full_db['New CGAD Symptom Count'] = cgad_full_db.loc[:, ['C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items', 'C6 Items']].sum(axis = 1)
+                cgad_full_db['CGAD Symptom Count Discrepancy'] = np.where(((cgad_full_db['scid_f120cnt'] != cgad_full_db['New CGAD Symptom Count'])), "Problem", "Fine")
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_cgad_db = cgad_full_db.loc[:, ['scid_interviewername', 'C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items', 'C6 Items', 'scid_f120', 'scid_f120cnt', 'scid_f120s',
+                'CGAD Criterion C Discrepancy', 'New CGAD Symptom Count', 'CGAD Symptom Count Discrepancy']]
+
+                # Getting Count Discrepancy and Value
+                refined_cgad_db['Count Discrepancy Direction'] = np.where(((refined_cgad_db['scid_f120cnt'] - refined_cgad_db['New CGAD Symptom Count']) > 0), "Original Count Larger", 
+                np.where(((refined_cgad_db['scid_f120cnt'] == refined_cgad_db['New CGAD Symptom Count'])), "Same", "New Count Larger"))
+                refined_cgad_db['Count Discrepancy Value'] = refined_cgad_db['scid_f120cnt'] - refined_cgad_db['New CGAD Symptom Count']
+
+                # Getting only "Problem Subjects"
+                only_problem_children_cgad = refined_cgad_db.loc[((refined_cgad_db['CGAD Criterion C Discrepancy'] == "Problem") | (refined_cgad_db['CGAD Symptom Count Discrepancy'] == "Problem"))]
+
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a Criteria C item (scid_f120cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **CGAD Criterion C Discrepancy** - The Criterion C item (scid_f120) should only be marked 3 (threshold) if 3 or more symptoms are accounted for. This column checks to see if that is the case.")
+                    st.markdown("- **New CGAD Symptom Count** - My new symptom count using the Cx Item columns.")
+                    st.markdown("- **CGAD Symptom Count Discrepancy** - Checks whether the the scid Criterion C count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_cgad = st.checkbox("Would you like to see the associated interviewer?", key = 'cgad')
+                if interviewer_selection_cgad:
+                    problem_children_cgad_final = only_problem_children_cgad[['scid_interviewername', 'C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items', 'C6 Items', 'scid_f120', 'scid_f120s',
+                    'CGAD Criterion C Discrepancy', 'scid_f120cnt', 'New CGAD Symptom Count', 'CGAD Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_cgad_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_cgad_final)
+                    csv = convert_df(problem_children_cgad_final)
+                else:
+                    problem_children_cgad_final = only_problem_children_cgad[['C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items', 'C6 Items', 'scid_f120', 'scid_f120s',
+                    'CGAD Criterion C Discrepancy', 'scid_f120cnt', 'New CGAD Symptom Count', 'CGAD Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_cgad_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_cgad_final)
+                    csv = convert_df(problem_children_cgad_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_cgad_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'cgad_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_cgad_final[problem_children_cgad_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_cgad_final[problem_children_cgad_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                pa_problem_subject_list = problem_children_cgad_final.index.values.tolist()
+                see_more_cgad = st.multiselect("See Specific Subject Info? [Select as many as you would like]", pa_problem_subject_list)
+                interviewer_selection_cgad_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_cgad')
+                if see_more_cgad is not None:
+                    if interviewer_selection_cgad_2:
+                        specific_cgad_subject_db = cgad_full_db.loc[see_more_cgad,:]
+                        specific_cgad_subject_db_2 = specific_cgad_subject_db.loc[:,['scid_interviewername','C1 Items', 'scid_f114', 'C2 Items', 'scid_f115', 'C3 Items', 'scid_f116', 'C4 Items', 
+                        'scid_f117', 'C5 Items', 'scid_f118', 'C6 Items', 'scid_f119', 'scid_f120', 'scid_f120s', 'scid_f120cnt', 'New CGAD Symptom Count']]
+                        specific_cgad_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_cgad_subject_db_2)
+                        csv = convert_df(specific_cgad_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'cgad_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_cgad_subject_db = cgad_full_db.loc[see_more_cgad,:]
+                        specific_cgad_subject_db_2 = specific_cgad_subject_db.loc[:,['C1 Items', 'scid_f114', 'C2 Items', 'scid_f115', 'C3 Items', 'scid_f116', 'C4 Items', 'scid_f117', 
+                        'C5 Items', 'scid_f118', 'C6 Items', 'scid_f119', 'scid_f120', 'scid_f120s', 'scid_f120cnt', 'New CGAD Symptom Count']]
+                        specific_cgad_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_cgad_subject_db_2)
+                        csv = convert_df(specific_cgad_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'cgad_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
             if module_f_syndrome_selection == "PGAD":
-                st.write("Hello")
+                st.markdown(f"#### {module_f_syndrome_selection}")
+                st.markdown("---")
+
+                # Opening datafile
+                full_db = pd.read_csv(full_data)
+                module_f_items_db = pd.read_excel(module_f_file)
+                
+                # Selecting only module F items (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE F]
+                module_f_item_list = module_f_items_db['module_f_items'].values.tolist()
+                final_list = ['subject_id', 'scid_interviewername'] + module_f_item_list
+
+                module_f_db = full_db.loc[:, final_list]
+
+                # PGAD # Just Checking Calculation errors
+                pgad_full_db = module_f_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_f130', 'scid_f131', 'scid_f132', 'scid_f133', 'scid_f134', 'scid_f135', 'scid_f136', 'scid_f136cnt', 'scid_f136s']]
+
+                # Setting index to subject_id
+                pgad_full_db.set_index("subject_id", inplace = True)
+
+                # Filling all na values with 0 in order to run comparisons
+                pgad_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variable to integers instead of floats as it's more readable
+                pgad_full_db = pgad_full_db.astype({'scid_f130':'int', 'scid_f131':'int', 'scid_f132':'int', 'scid_f133':'int', 'scid_f134':'int', 'scid_f135':'int', 'scid_f136':'int',
+                'scid_f136cnt':'int', 'scid_f136s':'int'})
+
+                # Counting PGAD Criterion C # Max is 6
+                pgad_full_db['C1 Items'] = np.where(((pgad_full_db['scid_f130'] == 3)), 1, 0)
+                pgad_full_db['C2 Items'] = np.where(((pgad_full_db['scid_f131'] == 3)), 1, 0)
+                pgad_full_db['C3 Items'] = np.where(((pgad_full_db['scid_f132'] == 3)), 1 ,0)
+                pgad_full_db['C4 Items'] = np.where(((pgad_full_db['scid_f133'] == 3)), 1, 0)
+                pgad_full_db['C5 Items'] = np.where(((pgad_full_db['scid_f134'] == 3)), 1 ,0)
+                pgad_full_db['C6 Items'] = np.where(((pgad_full_db['scid_f135'] == 3)), 1 ,0)
+
+                # Checking the PGAD Criterion C Discrepancy # Need to have 3 or more symptoms # Checking against original eInterview Count
+                pgad_full_db['PGAD Criterion C Discrepancy'] = np.where(((pgad_full_db['scid_f136cnt'] >= 3) & (pgad_full_db['scid_f136'] != 3) & (pgad_full_db['scid_f136s'] == 4)), "Problem",
+                np.where(((pgad_full_db['scid_f136'] == 3) & (pgad_full_db['scid_f136cnt'] < 3)), "Problem", "Fine"))
+
+                # Checking Count Discrepancy
+                pgad_full_db['New PGAD Symptom Count'] = pgad_full_db.loc[:, ['C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items', 'C6 Items']].sum(axis = 1)
+                pgad_full_db['PGAD Symptom Count Discrepancy'] = np.where(((pgad_full_db['scid_f136cnt'] != pgad_full_db['New PGAD Symptom Count'])), "Problem", "Fine")
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_pgad_db = pgad_full_db.loc[:, ['scid_interviewername', 'C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items', 'C6 Items', 'scid_f136', 'scid_f136cnt', 'scid_f136s',
+                'PGAD Criterion C Discrepancy', 'New PGAD Symptom Count', 'PGAD Symptom Count Discrepancy']]
+
+                # Getting Count Discrepancy and Value
+                refined_pgad_db['Count Discrepancy Direction'] = np.where(((refined_pgad_db['scid_f136cnt'] - refined_pgad_db['New PGAD Symptom Count']) > 0), "Original Count Larger", 
+                np.where(((refined_pgad_db['scid_f136cnt'] == refined_pgad_db['New PGAD Symptom Count'])), "Same", "New Count Larger"))
+                refined_pgad_db['Count Discrepancy Value'] = refined_pgad_db['scid_f136cnt'] - refined_pgad_db['New PGAD Symptom Count']
+
+                # Getting only "Problem Subjects"
+                only_problem_children_pgad = refined_pgad_db.loc[((refined_pgad_db['PGAD Criterion C Discrepancy'] == "Problem") | (refined_pgad_db['PGAD Symptom Count Discrepancy'] == "Problem"))]
+
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a Criteria C item (scid_f136cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **PGAD Criterion C Discrepancy** - The Criterion C item (scid_f136) should only be marked 3 (threshold) if 3 or more symptoms are accounted for. This column checks to see if that is the case.")
+                    st.markdown("- **New PGAD Symptom Count** - My new symptom count using the Cx Item columns.")
+                    st.markdown("- **PGAD Symptom Count Discrepancy** - Checks whether the the scid Criterion C count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_pgad = st.checkbox("Would you like to see the associated interviewer?", key = 'pgad')
+                if interviewer_selection_pgad:
+                    problem_children_pgad_final = only_problem_children_pgad.loc[:, ['scid_interviewername', 'C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items', 'C6 Items', 'scid_f136', 'scid_f136s',
+                    'PGAD Criterion C Discrepancy', 'scid_f136cnt', 'New PGAD Symptom Count', 'PGAD Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_pgad_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_pgad_final)
+                    csv = convert_df(problem_children_pgad_final)
+                else:
+                    problem_children_pgad_final = only_problem_children_pgad.loc[:, ['C1 Items', 'C2 Items', 'C3 Items', 'C4 Items', 'C5 Items', 'C6 Items', 'scid_f136', 'scid_f136s',
+                    'PGAD Criterion C Discrepancy', 'scid_f136cnt', 'New PGAD Symptom Count', 'PGAD Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_pgad_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_pgad_final)
+                    csv = convert_df(problem_children_pgad_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_pgad_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'pgad_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_pgad_final[problem_children_pgad_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_pgad_final[problem_children_pgad_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                pa_problem_subject_list = problem_children_pgad_final.index.values.tolist()
+                see_more_pgad = st.multiselect("See Specific Subject Info? [Select as many as you would like]", pa_problem_subject_list)
+                interviewer_selection_pgad_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_pgad')
+                if see_more_pgad is not None:
+                    if interviewer_selection_pgad_2:
+                        specific_pgad_subject_db = pgad_full_db.loc[see_more_pgad,:]
+                        specific_pgad_subject_db_2 = specific_pgad_subject_db.loc[:,['scid_interviewername','C1 Items', 'scid_f130', 'C2 Items', 'scid_f131', 'C3 Items', 'scid_f132', 'C4 Items', 
+                        'scid_f133', 'C5 Items', 'scid_f134', 'C6 Items', 'scid_f135', 'scid_f136', 'scid_f136s', 'scid_f136cnt', 'New PGAD Symptom Count']]
+                        specific_pgad_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_pgad_subject_db_2)
+                        csv = convert_df(specific_pgad_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'pgad_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_pgad_subject_db = pgad_full_db.loc[see_more_pgad,:]
+                        specific_pgad_subject_db_2 = specific_pgad_subject_db.loc[:,['C1 Items', 'scid_f130', 'C2 Items', 'scid_f131', 'C3 Items', 'scid_f132', 'C4 Items', 'scid_f133', 
+                        'C5 Items', 'scid_f134', 'C6 Items', 'scid_f135', 'scid_f136', 'scid_f136s', 'scid_f136cnt', 'New PGAD Symptom Count']]
+                        specific_pgad_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_pgad_subject_db_2)
+                        csv = convert_df(specific_pgad_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'pgad_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
         if module_selection == 'Module K':
-            st.write("Hello")
+            module_k_syndrome_selection = st.sidebar.selectbox("Which disorder would you like to look at?", ["---", "ADHD Inattention", "ADHD Hyperactivity"])
+            st.markdown(f"## {module_selection}")
+            st.markdown("---")
+            if module_k_syndrome_selection == "---":
+                st.markdown("### Options:")
+                st.markdown("- **'ADHD Inattention'**")
+                st.markdown("- **'ADHD Hyperactivity'**")
+            if module_k_syndrome_selection == "ADHD Inattention":
+                st.markdown(f"#### {module_k_syndrome_selection}")
+                st.markdown("---")
+
+                # Opening datafile
+                full_db = pd.read_csv(full_data)
+                module_k_items_db = pd.read_excel(module_k_file)
+                
+                # Selecting only module K items (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE K]
+                module_k_item_list = module_k_items_db['module_k_items'].values.tolist()
+                final_list = ['subject_id', 'scid_interviewername'] + module_k_item_list
+
+                module_k_db = full_db.loc[:, final_list]
+
+                # ADHD Inattention # Just Checking Calculation errors
+                adhd_ina_full_db = module_k_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_k4', 'scid_k5', 'scid_k6', 'scid_k7', 'scid_k8a', 'scid_k8b', 'scid_k8c', 'scid_k9', 'scid_k10',
+                'scid_k11a', 'scid_k11b', 'scid_k12', 'scid_k13', 'scid_k13cnt']]
+
+                # Setting index to subject_id
+                adhd_ina_full_db.set_index("subject_id", inplace = True)
+
+                # Filling all na values with 0 in order to run comparisons
+                adhd_ina_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variable to integers instead of floats as it's more readable
+                adhd_ina_full_db = adhd_ina_full_db.astype({'scid_k4':'int', 'scid_k5':'int', 'scid_k6':'int', 'scid_k7':'int', 'scid_k8a':'int', 'scid_k8b':'int', 'scid_k8c':'int',
+                'scid_k9':'int', 'scid_k10':'int', 'scid_k11a':'int', 'scid_k11b':'int', 'scid_k12':'int', 'scid_k13':'int', 'scid_k13cnt':'int'})
+
+                # Counting Inattention Symptoms # Max is 9
+                adhd_ina_full_db['Inattention A'] = np.where(((adhd_ina_full_db['scid_k4'] == 3)), 1, 0)
+                adhd_ina_full_db['Inattention B'] = np.where(((adhd_ina_full_db['scid_k5'] == 3)), 1, 0)
+                adhd_ina_full_db['Inattention C'] = np.where(((adhd_ina_full_db['scid_k6'] == 3)), 1, 0)
+                adhd_ina_full_db['Inattention D'] = np.where(((adhd_ina_full_db['scid_k7'] == 3)), 1, 0)
+                adhd_ina_full_db['Inattention E'] = np.where(((adhd_ina_full_db['scid_k8a'] == 3) | (adhd_ina_full_db['scid_k8b'] == 3) | (adhd_ina_full_db['scid_k8c'] == 3)), 1, 0)
+                adhd_ina_full_db['Inattention F'] = np.where(((adhd_ina_full_db['scid_k9'] == 3)), 1, 0)
+                adhd_ina_full_db['Inattention G'] = np.where(((adhd_ina_full_db['scid_k10'] == 3)), 1, 0)
+                adhd_ina_full_db['Inattention H'] = np.where(((adhd_ina_full_db['scid_k11a'] == 3) | (adhd_ina_full_db['scid_k11b'] == 3)), 1, 0)
+                adhd_ina_full_db['Inattention I'] = np.where(((adhd_ina_full_db['scid_k12'] == 3)), 1, 0)
+
+                # Checking the ADHD Inattention Discrepancy # Need to have at least 5 Inattention symptoms # Checking against eInterview Count
+                adhd_ina_full_db['ADHD Inattention Criteria Discrepancy'] = np.where((((adhd_ina_full_db['scid_k13'] != 3) & (adhd_ina_full_db['scid_k13cnt'] >= 5)) | ((adhd_ina_full_db['scid_k13'] == 3) & (adhd_ina_full_db['scid_k13cnt'] < 5))), "Problem", "Fine")
+                
+                # Checking Count Discrepancy
+                adhd_ina_full_db['New ADHD INA Symptom Count'] = adhd_ina_full_db.loc[:, ['Inattention A', 'Inattention B', 'Inattention C', 'Inattention D', 'Inattention E', 'Inattention F', 'Inattention G', 
+                'Inattention H', 'Inattention I']].sum(axis = 1)
+                adhd_ina_full_db['ADHD INA Symptom Count Discrepancy'] = np.where(((adhd_ina_full_db['scid_k13cnt'] != adhd_ina_full_db['New ADHD INA Symptom Count'])), "Problem", "Fine")
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_adhd_ina_db = adhd_ina_full_db.loc[:, ['scid_interviewername', 'Inattention A', 'Inattention B', 'Inattention C', 'Inattention D', 'Inattention E', 'Inattention F', 'Inattention G', 
+                'Inattention H', 'Inattention I', 'scid_k13', 'scid_k13cnt', 'ADHD Inattention Criteria Discrepancy', 'New ADHD INA Symptom Count', 'ADHD INA Symptom Count Discrepancy']]
+                
+                # Getting Count Discrepancy Direction and Value
+                refined_adhd_ina_db['Count Discrepancy Direction'] = np.where(((refined_adhd_ina_db['scid_k13cnt'] - refined_adhd_ina_db['New ADHD INA Symptom Count']) > 0), "Original Count Larger",
+                np.where(((refined_adhd_ina_db['scid_k13cnt'] - refined_adhd_ina_db['New ADHD INA Symptom Count']) == 0), "Same", "New Count Larger"))
+                refined_adhd_ina_db['Count Discrepancy Value'] = refined_adhd_ina_db['scid_k13cnt'] - refined_adhd_ina_db['New ADHD INA Symptom Count']
+
+                # Getting only "Problem Subjects"
+                only_problem_children_adhd_ina = refined_adhd_ina_db.loc[((refined_adhd_ina_db['ADHD Inattention Criteria Discrepancy'] == "Problem") | (refined_adhd_ina_db['ADHD INA Symptom Count Discrepancy'] == "Problem"))]
+
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a ADHD Inattention item (scid_k13cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **ADHD Inattention Criteria Discrepancy** - The ADHD INA item (scid_k13) should only be marked 3 (threshold) if 5 or more symptoms are accounted for. This column checks to see if that is the case.")
+                    st.markdown("- **New ADHD INA Symptom Count** - My new symptom count using the Inattention X columns.")
+                    st.markdown("- **ADHD INA Symptom Count Discrepancy** - Checks whether the the scid Inattention count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_adhd_ina = st.checkbox("Would you like to see the associated interviewer?", key = 'adhd_ina')
+                if interviewer_selection_adhd_ina:
+                    problem_children_adhd_ina_final = only_problem_children_adhd_ina[['scid_interviewername', 'Inattention A', 'Inattention B', 'Inattention C', 'Inattention D', 'Inattention E', 'Inattention F', 'Inattention G', 
+                    'Inattention H', 'Inattention I' 'scid_k13', 'ADHD Inattention Criteria Discrepancy', 'scid_k13cnt', 'New ADHD INA Symptom Count', 'ADHD INA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_adhd_ina_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_adhd_ina_final)
+                    csv = convert_df(problem_children_adhd_ina_final)
+                else:
+                    problem_children_adhd_ina_final = only_problem_children_adhd_ina[['Inattention A', 'Inattention B', 'Inattention C', 'Inattention D', 'Inattention E', 'Inattention F', 'Inattention G', 
+                    'Inattention H', 'Inattention I', 'scid_k13', 'ADHD Inattention Criteria Discrepancy', 'scid_k13cnt', 'New ADHD INA Symptom Count', 'ADHD INA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_adhd_ina_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_adhd_ina_final)
+                    csv = convert_df(problem_children_adhd_ina_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_adhd_ina_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'adhd_ina_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_adhd_ina_final[problem_children_adhd_ina_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_adhd_ina_final[problem_children_adhd_ina_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                pa_problem_subject_list = problem_children_adhd_ina_final.index.values.tolist()
+                see_more_adhd_ina = st.multiselect("See Specific Subject Info? [Select as many as you would like]", pa_problem_subject_list)
+                interviewer_selection_adhd_ina_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_adhd_ina')
+                if see_more_adhd_ina is not None:
+                    if interviewer_selection_adhd_ina_2:
+                        specific_adhd_ina_subject_db = adhd_ina_full_db.loc[see_more_adhd_ina,:]
+                        specific_adhd_ina_subject_db_2 = specific_adhd_ina_subject_db.loc[:,['scid_interviewername','Inattention A', 'scid_k4', 'Inattention B', 'scid_k5', 'Inattention C', 'scid_k6', 'Inattention D', 
+                        'scid_k7', 'Inattention E', 'scid_k8a', 'scid_k8b', 'scid_k8c', 'Inattention F', 'scid_k9', 'Inattention G', 'scid_k10', 'Inattention H', 'scid_k11a', 'scid_k11b', 'Inattention I', 'scid_k12',
+                        'scid_k13', 'scid_k13cnt', 'New ADHD INA Symptom Count']]
+                        specific_adhd_ina_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_adhd_ina_subject_db_2)
+                        csv = convert_df(specific_adhd_ina_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'adhd_ina_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_adhd_ina_subject_db = adhd_ina_full_db.loc[see_more_adhd_ina,:]
+                        specific_adhd_ina_subject_db_2 = specific_adhd_ina_subject_db.loc[:,['Inattention A', 'scid_k4', 'Inattention B', 'scid_k5', 'Inattention C', 'scid_k6', 'Inattention D', 
+                        'scid_k7', 'Inattention E', 'scid_k8a', 'scid_k8b', 'scid_k8c', 'Inattention F', 'scid_k9', 'Inattention G', 'scid_k10', 'Inattention H', 'scid_k11a', 'scid_k11b', 'Inattention I', 'scid_k12',
+                        'scid_k13', 'scid_k13cnt', 'New ADHD INA Symptom Count']]
+                        specific_adhd_ina_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_adhd_ina_subject_db_2)
+                        csv = convert_df(specific_adhd_ina_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'adhd_ina_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+            if module_k_syndrome_selection == "ADHD Hyperactivity":
+                st.markdown(f"#### {module_k_syndrome_selection}")
+                st.markdown("---")
+
+                # Opening datafile
+                full_db = pd.read_csv(full_data)
+                module_k_items_db = pd.read_excel(module_k_file)
+                
+                # Selecting only module K items (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE K]
+                module_k_item_list = module_k_items_db['module_k_items'].values.tolist()
+                final_list = ['subject_id', 'scid_interviewername'] + module_k_item_list
+
+                module_k_db = full_db.loc[:, final_list]
+
+                # ADHD Hyperactivity # Just Checking Calculation errors
+                adhd_hyp_full_db = module_k_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_k14', 'scid_k15', 'scid_k16', 'scid_k17', 'scid_k18a', 'scid_k18b', 'scid_k19', 'scid_k20a', 'scid_k20b',
+                'scid_k21', 'scid_k22a', 'scid_k22b', 'scid_k23', 'scid_k23cnt']]
+
+                # Setting index to subject_id
+                adhd_hyp_full_db.set_index("subject_id", inplace = True)
+
+                # Filling all na values with 0 in order to run comparisons
+                adhd_hyp_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variable to integers instead of floats as it's more readable
+                adhd_hyp_full_db = adhd_hyp_full_db.astype({'scid_k14':'int', 'scid_k15':'int', 'scid_k16':'int', 'scid_k17':'int', 'scid_k18a':'int', 'scid_k18b':'int',
+                'scid_k19':'int', 'scid_k20a':'int', 'scid_k20b':'int', 'scid_k21':'int', 'scid_k22a':'int', 'scid_k22b':'int', 'scid_k23':'int', 'scid_k23cnt':'int'})
+
+                # Counting Hyperactivity Symptoms # Max is 9
+                adhd_hyp_full_db['Hyperactivity A'] = np.where(((adhd_hyp_full_db['scid_k14'] == 3)), 1, 0)
+                adhd_hyp_full_db['Hyperactivity B'] = np.where(((adhd_hyp_full_db['scid_k15'] == 3)), 1, 0)
+                adhd_hyp_full_db['Hyperactivity C'] = np.where(((adhd_hyp_full_db['scid_k16'] == 3)), 1, 0)
+                adhd_hyp_full_db['Hyperactivity D'] = np.where(((adhd_hyp_full_db['scid_k17'] == 3)), 1, 0)
+                adhd_hyp_full_db['Hyperactivity E'] = np.where(((adhd_hyp_full_db['scid_k18a'] == 3) | (adhd_hyp_full_db['scid_k18b'] == 3)), 1, 0)
+                adhd_hyp_full_db['Hyperactivity F'] = np.where(((adhd_hyp_full_db['scid_k19'] == 3)), 1, 0)
+                adhd_hyp_full_db['Hyperactivity G'] = np.where(((adhd_hyp_full_db['scid_k20a'] == 3) | (adhd_hyp_full_db['scid_k20b'] == 3)), 1, 0)
+                adhd_hyp_full_db['Hyperactivity H'] = np.where(((adhd_hyp_full_db['scid_k21'] == 3)), 1, 0)
+                adhd_hyp_full_db['Hyperactivity I'] = np.where(((adhd_hyp_full_db['scid_k22a'] == 3) | (adhd_hyp_full_db['scid_k22b'] == 3)), 1, 0)
+
+                # Checking the ADHD Hyperactivity Discrepancy # Need to have at least 5 Hyperactivity symptoms # Checking against eInterview Count
+                adhd_hyp_full_db['ADHD Hyperactivity Criteria Discrepancy'] = np.where((((adhd_hyp_full_db['scid_k23'] != 3) & (adhd_hyp_full_db['scid_k23cnt'] >= 5)) | ((adhd_hyp_full_db['scid_k23'] == 3) & (adhd_hyp_full_db['scid_k23cnt'] < 5))), "Problem", "Fine")
+                
+                # Checking Count Discrepancy
+                adhd_hyp_full_db['New ADHD HYP Symptom Count'] = adhd_hyp_full_db.loc[:, ['Hyperactivity A', 'Hyperactivity B', 'Hyperactivity C', 'Hyperactivity D', 'Hyperactivity E', 'Hyperactivity F', 'Hyperactivity G', 
+                'Hyperactivity H', 'Hyperactivity I']].sum(axis = 1)
+                adhd_hyp_full_db['ADHD HYP Symptom Count Discrepancy'] = np.where(((adhd_hyp_full_db['scid_k23cnt'] != adhd_hyp_full_db['New ADHD HYP Symptom Count'])), "Problem", "Fine")
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_adhd_hyp_db = adhd_hyp_full_db.loc[:, ['scid_interviewername', 'Hyperactivity A', 'Hyperactivity B', 'Hyperactivity C', 'Hyperactivity D', 'Hyperactivity E', 'Hyperactivity F', 'Hyperactivity G', 
+                'Hyperactivity H', 'Hyperactivity I', 'scid_k23', 'scid_k23cnt', 'ADHD Hyperactivity Criteria Discrepancy', 'New ADHD HYP Symptom Count', 'ADHD HYP Symptom Count Discrepancy']]
+                
+                # Getting Count Discrepancy Direction and Value
+                refined_adhd_hyp_db['Count Discrepancy Direction'] = np.where(((refined_adhd_hyp_db['scid_k23cnt'] - refined_adhd_hyp_db['New ADHD HYP Symptom Count']) > 0), "Original Count Larger",
+                np.where(((refined_adhd_hyp_db['scid_k23cnt'] - refined_adhd_hyp_db['New ADHD HYP Symptom Count']) == 0), "Same", "New Count Larger"))
+                refined_adhd_hyp_db['Count Discrepancy Value'] = refined_adhd_hyp_db['scid_k23cnt'] - refined_adhd_hyp_db['New ADHD HYP Symptom Count']
+
+                # Getting only "Problem Subjects"
+                only_problem_children_adhd_hyp = refined_adhd_hyp_db.loc[((refined_adhd_hyp_db['ADHD Hyperactivity Criteria Discrepancy'] == "Problem") | (refined_adhd_hyp_db['ADHD HYP Symptom Count Discrepancy'] == "Problem"))]
+
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a ADHD Hyperactivity item (scid_k23cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **ADHD Hyperactivity Criteria Discrepancy** - The ADHD HYP item (scid_k23) should only be marked 3 (threshold) if 5 or more symptoms are accounted for. This column checks to see if that is the case.")
+                    st.markdown("- **New ADHD HYP Symptom Count** - My new symptom count using the Hyperactivity X columns.")
+                    st.markdown("- **ADHD HYP Symptom Count Discrepancy** - Checks whether the the scid Hyperactivity count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_adhd_hyp = st.checkbox("Would you like to see the associated interviewer?", key = 'adhd_hyp')
+                if interviewer_selection_adhd_hyp:
+                    problem_children_adhd_hyp_final = only_problem_children_adhd_hyp[['scid_interviewername', 'Hyperactivity A', 'Hyperactivity B', 'Hyperactivity C', 'Hyperactivity D', 'Hyperactivity E', 'Hyperactivity F', 'Hyperactivity G', 
+                    'Hyperactivity H', 'Hyperactivity I' 'scid_k23', 'ADHD Hyperactivity Criteria Discrepancy', 'scid_k23cnt', 'New ADHD HYP Symptom Count', 'ADHD HYP Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_adhd_hyp_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_adhd_hyp_final)
+                    csv = convert_df(problem_children_adhd_hyp_final)
+                else:
+                    problem_children_adhd_hyp_final = only_problem_children_adhd_hyp[['Hyperactivity A', 'Hyperactivity B', 'Hyperactivity C', 'Hyperactivity D', 'Hyperactivity E', 'Hyperactivity F', 'Hyperactivity G', 
+                    'Hyperactivity H', 'Hyperactivity I', 'scid_k23', 'ADHD Hyperactivity Criteria Discrepancy', 'scid_k23cnt', 'New ADHD HYP Symptom Count', 'ADHD HYP Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_adhd_hyp_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_adhd_hyp_final)
+                    csv = convert_df(problem_children_adhd_hyp_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_adhd_hyp_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'adhd_hyp_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_adhd_hyp_final[problem_children_adhd_hyp_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_adhd_hyp_final[problem_children_adhd_hyp_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                pa_problem_subject_list = problem_children_adhd_hyp_final.index.values.tolist()
+                see_more_adhd_hyp = st.multiselect("See Specific Subject Info? [Select as many as you would like]", pa_problem_subject_list)
+                interviewer_selection_adhd_hyp_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_adhd_hyp')
+                if see_more_adhd_hyp is not None:
+                    if interviewer_selection_adhd_hyp_2:
+                        specific_adhd_hyp_subject_db = adhd_hyp_full_db.loc[see_more_adhd_hyp,:]
+                        specific_adhd_hyp_subject_db_2 = specific_adhd_hyp_subject_db.loc[:,['scid_interviewername','Hyperactivity A', 'scid_k14', 'Hyperactivity B', 'scid_k15', 'Hyperactivity C', 'scid_k16', 'Hyperactivity D', 
+                        'scid_k17', 'Hyperactivity E', 'scid_k18a', 'scid_k18b', 'Hyperactivity F', 'scid_k19', 'Hyperactivity G', 'scid_k20a', 'scid_k20b' 'Hyperactivity H', 'scid_k21', 'Hyperactivity I', 'scid_k22a', 'scid_k22b',
+                        'scid_k23', 'scid_k23cnt', 'New ADHD HYP Symptom Count']]
+                        specific_adhd_hyp_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_adhd_hyp_subject_db_2)
+                        csv = convert_df(specific_adhd_hyp_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'adhd_hyp_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_adhd_hyp_subject_db = adhd_hyp_full_db.loc[see_more_adhd_hyp,:]
+                        specific_adhd_hyp_subject_db_2 = specific_adhd_hyp_subject_db.loc[:,['Hyperactivity A', 'scid_k14', 'Hyperactivity B', 'scid_k15', 'Hyperactivity C', 'scid_k16', 'Hyperactivity D', 
+                        'scid_k17', 'Hyperactivity E', 'scid_k18a', 'scid_k18b', 'Hyperactivity F', 'scid_k19', 'Hyperactivity G', 'scid_k20a', 'scid_k20b', 'Hyperactivity H', 'scid_k21', 'Hyperactivity I', 'scid_k22a', 'scid_k22b',
+                        'scid_k23', 'scid_k23cnt', 'New ADHD HYP Symptom Count']]
+                        specific_adhd_hyp_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_adhd_hyp_subject_db_2)
+                        csv = convert_df(specific_adhd_hyp_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'adhd_hyp_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
         if module_selection == "Module C":
             st.write("Hello")
