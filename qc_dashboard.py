@@ -4482,3 +4482,21 @@ if first_selection == 'Symptom Counts':
                         st.write(specific_brief_psy_subject_db_2)
                         csv = convert_df(specific_brief_psy_subject_db_2)
                         st.download_button("Download Data as a CSV", data = csv, file_name=f'brief_psy_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+if first_selection == 'Second Level Diagnosis Check':
+    full_data = st.file_uploader("Upload full RC database export", type = 'csv')
+    data_selection = st.sidebar.selectbox("What would you like to look at?", ['----', 'Everything', 'Module A', 'Module E', 'Module F', 'Module G', 'Module I',
+    'Module K', 'Module L', 'Module PD', 'Module C', 'Module D'])
+    if data_selection == '----':
+        st.markdown("Choose what you would like to see in the sidebar.")
+        st.markdown("### Options:")
+        st.markdown("- **Everything** - Every discrepancy across all modules.")
+        st.markdown("- **Module A** - All Module A diagnoses")
+        st.markdown("- **Module E** - All Module E diagnoses")
+        st.markdown("- **Module F** - All Module F diagnoses")
+        st.markdown("- **Module G** - All Module G diagnoses")
+        st.markdown("- **Module I** - All Module I diagnoses")
+        st.markdown("- **Module K** - All Module K diagnoses")
+        st.markdown("- **Module L** - All Module L diagnoses")
+        st.markdown("- **Module PD** - All Module PD diagnoses")
+        st.markdown("- **Module C** - All Module C diagnoses")
+        st.markdown("- **Module D** - All Module D diagnoses")
