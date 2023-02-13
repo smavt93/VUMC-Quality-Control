@@ -3982,8 +3982,8 @@ if first_selection == 'Symptom Counts':
                 with column2:
                     st.write("Number of Subjects with **New Count Larger**:", len(problem_children_adhd_hyp_final[problem_children_adhd_hyp_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
                     st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_adhd_hyp_final[problem_children_adhd_hyp_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
-                pa_problem_subject_list = problem_children_adhd_hyp_final.index.values.tolist()
-                see_more_adhd_hyp = st.multiselect("See Specific Subject Info? [Select as many as you would like]", pa_problem_subject_list)
+                adhd_hyp_problem_subject_list = problem_children_adhd_hyp_final.index.values.tolist()
+                see_more_adhd_hyp = st.multiselect("See Specific Subject Info? [Select as many as you would like]", adhd_hyp_problem_subject_list)
                 interviewer_selection_adhd_hyp_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_adhd_hyp')
                 if see_more_adhd_hyp is not None:
                     if interviewer_selection_adhd_hyp_2:
@@ -4005,13 +4005,14 @@ if first_selection == 'Symptom Counts':
                         csv = convert_df(specific_adhd_hyp_subject_db_2)
                         st.download_button("Download Data as a CSV", data = csv, file_name=f'adhd_hyp_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
         if module_selection == "Module C":
-            module_c_syndrome_selection = st.sidebar.selectbox("Which disorder would you like to look at?", ["---", "Schizophrenia", "Schizphreniform Disorder", "Brief Psychotic Disorder"])
+            module_c_syndrome_selection = st.sidebar.selectbox("Which disorder would you like to look at?", ["---", "Schizophrenia", "Schizphreniform Disorder", "Schizoaffective Disorder", "Brief Psychotic Disorder"])
             st.markdown(f"## {module_selection}")
             st.markdown("---")
             if module_c_syndrome_selection == "---":
                 st.markdown("### Options:")
                 st.markdown("- **'Schizphrenia'** - Checking catatonia count!")
                 st.markdown("- **'Schizophreniform Disorder'** -- Checking catatonia count!")
+                st.markdown("- **'Schizoaffective Disorder'** - Checking catatonia count!")
                 st.markdown("- **'Brief Psychotic Disorder'** - Checking catatonia count!")
             if module_c_syndrome_selection == "Schizophrenia":
                 st.markdown(f"#### {module_c_syndrome_selection}")
@@ -4022,9 +4023,9 @@ if first_selection == 'Symptom Counts':
                 module_c_items_db = pd.read_excel(module_c_file)
                 
                 # Selecting only module C items and Catatonia Items from Module B (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE C]
-                module_c_item_list = module_k_items_db['module_k_items'].values.tolist()
+                module_c_item_list = module_c_items_db['module_c_items'].values.tolist()
                 catatonia_list = ['scid_b27', 'scid_b28', 'scid_b29', 'scid_b30', 'scid_b31', 'scid_b32', 'scid_b33', 'scid_b34', 'scid_b35', 'scid_b36', 'scid_b37', 'scid_b38']
-                final_list = ['subject_id', 'scid_interviewername'] + catatonia_list + module_k_item_list
+                final_list = ['subject_id', 'scid_interviewername'] + catatonia_list + module_c_item_list
 
                 module_c_db = full_db.loc[:, final_list]
 
@@ -4056,5 +4057,428 @@ if first_selection == 'Symptom Counts':
                 schizo_full_db['Catalepsy'] = np.where((schizo_full_db['scid_b37'] == 3), 1, 0)
                 schizo_full_db['Waxy Flexibility'] = np.where((schizo_full_db['scid_b38'] == 3), 1, 0)
 
-                # Checking the With Catatonia item of Schizophreniam # Needs to have 3 or more catatonic items to be present
+                # Checking the With Catatonia item of Schizophrenia # Needs to have 3 or more catatonic items to be present # Only capturing people that have schizophrenia (c10 == 3)
                 schizo_full_db['W/ CATA SCHIZOPHRENIA Discrepancy'] = np.where((((schizo_full_db['scid_c11'] == 1) & (schizo_full_db['scid_c11cnt'] < 3)) | ((schizo_full_db['scid_c10'] == 3) & (schizo_full_db['scid_c11cnt'] >= 3) & (schizo_full_db['scid_c11'] != 1))), "Problem", "Fine")
+
+                # Checking Count Discrepancy
+                schizo_full_db['New SCHIZO CATA Symptom Count'] = schizo_full_db.loc[:, ['Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                'Waxy Flexibility']].sum(axis = 1)
+                schizo_full_db['SCHIZO CATA Symptom Count Discrepancy'] = np.where(((schizo_full_db['scid_c10'] == 3) & (schizo_full_db['scid_c11cnt'] != schizo_full_db['New SCHIZO CATA Symptom Count'])), "Problem", "Fine")
+
+                # Getting Count Items and the Discrepancy Values
+                refined_schizo_db = schizo_full_db.loc[:, ['scid_interviewername', 'Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy', 
+                'Waxy Flexibility', 'scid_c10', 'scid_c11', 'scid_c11cnt', 'W/ CATA SCHIZOPHRENIA Discrepancy', 'New SCHIZO CATA Symptom Count', 'SCHIZO CATA Symptom Count Discrepancy']]
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_schizo_db['Count Discrepancy Direction'] = np.where(((refined_schizo_db['scid_c10'] != 3)), "Nothing to Check", np.where(((refined_schizo_db['scid_c11cnt'] - refined_schizo_db['New SCHIZO CATA Symptom Count']) > 0), 
+                "Original Count Larger", np.where(((refined_schizo_db['scid_c11cnt'] - refined_schizo_db['New SCHIZO CATA Symptom Count']) == 0), "Same", "New Count Larger")))
+                refined_schizo_db['Count Discrepancy Value'] = refined_schizo_db['scid_c11cnt'] - refined_schizo_db['New SCHIZO CATA Symptom Count']
+
+                # Getting Only Problem Children
+                only_problem_children_schizo = refined_schizo_db.loc[((refined_schizo_db['W/ CATA SCHIZOPHRENIA Discrepancy'] == "Problem") | (refined_schizo_db['SCHIZO CATA Symptom Count Discrepancy'] == "Problem"))]
+
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a With Catatonia item (scid_c11cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **W/ CATA SCHIZOPHRENIA Discrepancy** - The W/ Catatonia item (scid_c11) should only be marked 1 (Yes) if 3 or more symptoms are accounted for. This column checks to see if that is the case.")
+                    st.markdown("- **New SCHIZO CATA Symptom Count** - My new symptom count using the Catatonia Symptom columns.")
+                    st.markdown("- **SCHIZO CATA Symptom Count Discrepancy** - Checks whether the the scid Catatonia Symptom count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_schizo = st.checkbox("Would you like to see the associated interviewer?", key = 'schizo')
+                if interviewer_selection_schizo:
+                    problem_children_schizo_final = only_problem_children_schizo.loc[:, ['scid_interviewername', 'Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                    'Waxy Flexibility', 'scid_c11', 'W/ CATA SCHIZOPHRENIA Discrepancy', 'scid_c11cnt', 'New SCHIZO CATA Symptom Count', 'SCHIZO CATA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_schizo_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_schizo_final)
+                    csv = convert_df(problem_children_schizo_final)
+                else:
+                    problem_children_schizo_final = only_problem_children_schizo.loc[:, ['Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                    'Waxy Flexibility', 'scid_c11', 'W/ CATA SCHIZOPHRENIA Discrepancy', 'scid_c11cnt', 'New SCHIZO CATA Symptom Count', 'SCHIZO CATA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_schizo_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_schizo_final)
+                    csv = convert_df(problem_children_schizo_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_schizo_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'schizo_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_schizo_final[problem_children_schizo_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_schizo_final[problem_children_schizo_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                schizo_problem_subject_list = problem_children_schizo_final.index.values.tolist()
+                see_more_schizo = st.multiselect("See Specific Subject Info? [Select as many as you would like]", schizo_problem_subject_list)
+                interviewer_selection_schizo_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_schizo')
+                if see_more_schizo is not None:
+                    if interviewer_selection_schizo_2:
+                        specific_schizo_subject_db = schizo_full_db.loc[see_more_schizo,:]
+                        specific_schizo_subject_db_2 = specific_schizo_subject_db.loc[:,['scid_interviewername','Stupor', 'scid_b27', 'Grimacing', 'scid_b28', 'Mannerism', 'scid_b29', 'Posturing', 
+                        'scid_b30', 'Agitation', 'scid_b31', 'Stereotype', 'scid_b32', 'Mutism', 'scid_b33', 'Echolalia', 'scid_b34', 'Negativism', 'scid_b35', 'Echopraxia',
+                        'scid_b36', 'Catalepsy', 'scid_b37', 'Waxy Flexibility', 'scid_b38', 'scid_c11cnt', 'New SCHIZO CATA Symptom Count']]
+                        specific_schizo_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_schizo_subject_db_2)
+                        csv = convert_df(specific_schizo_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'schizo_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_schizo_subject_db = schizo_full_db.loc[see_more_schizo,:]
+                        specific_schizo_subject_db_2 = specific_schizo_subject_db.loc[:,['Stupor', 'scid_b27', 'Grimacing', 'scid_b28', 'Mannerism', 'scid_b29', 'Posturing', 
+                        'scid_b30', 'Agitation', 'scid_b31', 'Stereotype', 'scid_b32', 'Mutism', 'scid_b33', 'Echolalia', 'scid_b34', 'Negativism', 'scid_b35', 'Echopraxia',
+                        'scid_b36', 'Catalepsy', 'scid_b37', 'Waxy Flexibility', 'scid_b38', 'scid_c11cnt', 'New SCHIZO CATA Symptom Count']]
+                        specific_schizo_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_schizo_subject_db_2)
+                        csv = convert_df(specific_schizo_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'schizo_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+            if module_c_syndrome_selection == "Schizphreniform Disorder":
+                st.markdown(f"#### {module_c_syndrome_selection}")
+                st.markdown("---")
+
+                # Opening datafile
+                full_db = pd.read_csv(full_data)
+                module_c_items_db = pd.read_excel(module_c_file)
+                
+                # Selecting only module C items and Catatonia Items from Module B (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE C]
+                module_c_item_list = module_c_items_db['module_c_items'].values.tolist()
+                catatonia_list = ['scid_b27', 'scid_b28', 'scid_b29', 'scid_b30', 'scid_b31', 'scid_b32', 'scid_b33', 'scid_b34', 'scid_b35', 'scid_b36', 'scid_b37', 'scid_b38']
+                final_list = ['subject_id', 'scid_interviewername'] + catatonia_list + module_c_item_list
+
+                module_c_db = full_db.loc[:, final_list]
+
+                # Schizophrenia # Just Checking Calculation errors
+                schizoform_full_db = module_c_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_b27', 'scid_b28', 'scid_b29', 'scid_b30', 'scid_b31', 'scid_b32', 'scid_b33', 'scid_b34', 
+                'scid_b35', 'scid_b36', 'scid_b37', 'scid_b38', 'scid_c14', 'scid_c21', 'scid_c21cnt']]
+
+                # Setting index to subject_id
+                schizoform_full_db.set_index('subject_id', inplace = True)
+
+                # Filling all the na values with 0 in order to run comparisons
+                schizoform_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variables to integers instead of floats as it is more readable
+                schizoform_full_db = schizoform_full_db.astype({'scid_b27':'int', 'scid_b28':'int', 'scid_b29':'int', 'scid_b30':'int', 'scid_b31':'int', 'scid_b32':'int', 'scid_b33':'int', 'scid_b34':'int', 
+                'scid_b35':'int', 'scid_b36':'int', 'scid_b37':'int', 'scid_b38':'int', 'scid_c14':'int', 'scid_c21':'int', 'scid_c21cnt':'int'})
+
+                # Counting Catatonia Items # Max is 12
+                schizoform_full_db['Stupor'] = np.where((schizoform_full_db['scid_b27'] == 3), 1, 0)
+                schizoform_full_db['Grimacing'] = np.where((schizoform_full_db['scid_b28'] == 3), 1, 0)
+                schizoform_full_db['Mannerism'] = np.where((schizoform_full_db['scid_b29'] == 3), 1, 0)
+                schizoform_full_db['Posturing'] = np.where((schizoform_full_db['scid_b30'] == 3), 1, 0)
+                schizoform_full_db['Agitation'] = np.where((schizoform_full_db['scid_b31'] == 3), 1, 0)
+                schizoform_full_db['Stereotype'] = np.where((schizoform_full_db['scid_b32'] == 3), 1, 0)
+                schizoform_full_db['Mutism'] = np.where((schizoform_full_db['scid_b33'] == 3), 1, 0)
+                schizoform_full_db['Echolalia'] = np.where((schizoform_full_db['scid_b34'] == 3), 1, 0)
+                schizoform_full_db['Negativism'] = np.where((schizoform_full_db['scid_b35'] == 3), 1, 0)
+                schizoform_full_db['Echopraxia'] = np.where((schizoform_full_db['scid_b36'] == 3), 1, 0)
+                schizoform_full_db['Catalepsy'] = np.where((schizoform_full_db['scid_b37'] == 3), 1, 0)
+                schizoform_full_db['Waxy Flexibility'] = np.where((schizoform_full_db['scid_b38'] == 3), 1, 0)
+
+                # Checking the With Catatonia item of Schizophrenia # Needs to have 3 or more catatonic items to be present # Only capturing people that have schizophreniform (c10 == 3)
+                schizoform_full_db['W/ CATA SCHIZOPHRENIFORM Discrepancy'] = np.where((((schizoform_full_db['scid_c21'] == 1) & (schizoform_full_db['scid_c21cnt'] < 3)) | ((schizoform_full_db['scid_c14'] == 3) & (schizoform_full_db['scid_c21cnt'] >= 3) & (schizoform_full_db['scid_c21'] != 1))), "Problem", "Fine")
+
+                # Checking Count Discrepancy
+                schizoform_full_db['New SCHIZOFORM CATA Symptom Count'] = schizoform_full_db.loc[:, ['Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                'Waxy Flexibility']].sum(axis = 1)
+                schizoform_full_db['SCHIZOFORM CATA Symptom Count Discrepancy'] = np.where(((schizoform_full_db['scid_c14'] == 3) & (schizoform_full_db['scid_c21cnt'] != schizoform_full_db['New SCHIZOFORM CATA Symptom Count'])), "Problem", "Fine")
+
+                # Getting Count Items and the Discrepancy Values
+                refined_schizoform_db = schizoform_full_db.loc[:, ['scid_interviewername', 'Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy', 
+                'Waxy Flexibility', 'scid_c14', 'scid_c21', 'scid_c21cnt', 'W/ CATA SCHIZOPHRENIFORM Discrepancy', 'New SCHIZOFORM CATA Symptom Count', 'SCHIZOFORM CATA Symptom Count Discrepancy']]
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_schizoform_db['Count Discrepancy Direction'] = np.where(((refined_schizoform_db['scid_c14'] != 3)), "Nothing to Check", np.where(((refined_schizoform_db['scid_c21cnt'] - refined_schizoform_db['New SCHIZOFORM CATA Symptom Count']) > 0), 
+                "Original Count Larger", np.where(((refined_schizoform_db['scid_c21cnt'] - refined_schizoform_db['New SCHIZOFORM CATA Symptom Count']) == 0), "Same", "New Count Larger")))
+                refined_schizoform_db['Count Discrepancy Value'] = refined_schizoform_db['scid_c21cnt'] - refined_schizoform_db['New SCHIZOFORM CATA Symptom Count']
+
+                # Getting Only Problem Children
+                only_problem_children_schizoform = refined_schizoform_db.loc[((refined_schizoform_db['W/ CATA SCHIZOPHRENIFORM Discrepancy'] == "Problem") | (refined_schizoform_db['SCHIZOFORM CATA Symptom Count Discrepancy'] == "Problem"))]
+
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a With Catatonia item (scid_c21cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **W/ CATA SCHIZOPHRENIFORM Discrepancy** - The W/ Catatonia item (scid_c21) should only be marked 1 (Yes) if 3 or more symptoms are accounted for. This column checks to see if that is the case.")
+                    st.markdown("- **New SCHIZOFORM CATA Symptom Count** - My new symptom count using the Catatonia Symptom columns.")
+                    st.markdown("- **SCHIZOFORM CATA Symptom Count Discrepancy** - Checks whether the the scid Catatonia Symptom count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_schizoform = st.checkbox("Would you like to see the associated interviewer?", key = 'schizoform')
+                if interviewer_selection_schizoform:
+                    problem_children_schizoform_final = only_problem_children_schizoform.loc[:, ['scid_interviewername', 'Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                    'Waxy Flexibility', 'scid_c21', 'W/ CATA SCHIZOPHRENIFORM Discrepancy', 'scid_c21cnt', 'New SCHIZOFORM CATA Symptom Count', 'SCHIZOFORM CATA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_schizoform_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_schizoform_final)
+                    csv = convert_df(problem_children_schizoform_final)
+                else:
+                    problem_children_schizoform_final = only_problem_children_schizoform.loc[:, ['Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                    'Waxy Flexibility', 'scid_c21', 'W/ CATA SCHIZOPHRENIFORM Discrepancy', 'scid_c21cnt', 'New SCHIZOFORM CATA Symptom Count', 'SCHIZOFORM CATA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_schizoform_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_schizoform_final)
+                    csv = convert_df(problem_children_schizoform_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_schizoform_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'schizoform_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_schizoform_final[problem_children_schizoform_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_schizoform_final[problem_children_schizoform_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                schizoform_problem_subject_list = problem_children_schizoform_final.index.values.tolist()
+                see_more_schizoform = st.multiselect("See Specific Subject Info? [Select as many as you would like]", schizoform_problem_subject_list)
+                interviewer_selection_schizoform_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_schizoform')
+                if see_more_schizoform is not None:
+                    if interviewer_selection_schizoform_2:
+                        specific_schizoform_subject_db = schizoform_full_db.loc[see_more_schizoform,:]
+                        specific_schizoform_subject_db_2 = specific_schizoform_subject_db.loc[:,['scid_interviewername','Stupor', 'scid_b27', 'Grimacing', 'scid_b28', 'Mannerism', 'scid_b29', 'Posturing', 
+                        'scid_b30', 'Agitation', 'scid_b31', 'Stereotype', 'scid_b32', 'Mutism', 'scid_b33', 'Echolalia', 'scid_b34', 'Negativism', 'scid_b35', 'Echopraxia',
+                        'scid_b36', 'Catalepsy', 'scid_b37', 'Waxy Flexibility', 'scid_b38', 'scid_c21cnt', 'New SCHIZOFORM CATA Symptom Count']]
+                        specific_schizoform_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_schizoform_subject_db_2)
+                        csv = convert_df(specific_schizoform_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'schizoform_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_schizoform_subject_db = schizoform_full_db.loc[see_more_schizoform,:]
+                        specific_schizoform_subject_db_2 = specific_schizoform_subject_db.loc[:,['Stupor', 'scid_b27', 'Grimacing', 'scid_b28', 'Mannerism', 'scid_b29', 'Posturing', 
+                        'scid_b30', 'Agitation', 'scid_b31', 'Stereotype', 'scid_b32', 'Mutism', 'scid_b33', 'Echolalia', 'scid_b34', 'Negativism', 'scid_b35', 'Echopraxia',
+                        'scid_b36', 'Catalepsy', 'scid_b37', 'Waxy Flexibility', 'scid_b38', 'scid_c21cnt', 'New SCHIZOFORM CATA Symptom Count']]
+                        specific_schizoform_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_schizoform_subject_db_2)
+                        csv = convert_df(specific_schizoform_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'schizoform_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+            if module_c_syndrome_selection == "Schizoaffective Disorder":
+                st.markdown(f"#### {module_c_syndrome_selection}")
+                st.markdown("---")
+
+                # Opening datafile
+                full_db = pd.read_csv(full_data)
+                module_c_items_db = pd.read_excel(module_c_file)
+                
+                # Selecting only module C items and Catatonia Items from Module B (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE C]
+                module_c_item_list = module_c_items_db['module_c_items'].values.tolist()
+                catatonia_list = ['scid_b27', 'scid_b28', 'scid_b29', 'scid_b30', 'scid_b31', 'scid_b32', 'scid_b33', 'scid_b34', 'scid_b35', 'scid_b36', 'scid_b37', 'scid_b38']
+                final_list = ['subject_id', 'scid_interviewername'] + catatonia_list + module_c_item_list
+
+                module_c_db = full_db.loc[:, final_list]
+
+                # Schizoaffective Disorder # Just Checking Calculation errors
+                schizoaff_full_db = module_c_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_b27', 'scid_b28', 'scid_b29', 'scid_b30', 'scid_b31', 'scid_b32', 'scid_b33', 'scid_b34', 
+                'scid_b35', 'scid_b36', 'scid_b37', 'scid_b38', 'scid_c26', 'scid_c28', 'scid_c28cnt']]
+
+                # Setting index to subject_id
+                schizoaff_full_db.set_index('subject_id', inplace = True)
+
+                # Filling all the na values with 0 in order to run comparisons
+                schizoaff_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variables to integers instead of floats as it is more readable
+                schizoaff_full_db = schizoaff_full_db.astype({'scid_b27':'int', 'scid_b28':'int', 'scid_b29':'int', 'scid_b30':'int', 'scid_b31':'int', 'scid_b32':'int', 'scid_b33':'int', 'scid_b34':'int', 
+                'scid_b35':'int', 'scid_b36':'int', 'scid_b37':'int', 'scid_b38':'int', 'scid_c26':'int', 'scid_c28':'int', 'scid_c28cnt':'int'})
+
+                # Counting Catatonia Items # Max is 12
+                schizoaff_full_db['Stupor'] = np.where((schizoaff_full_db['scid_b27'] == 3), 1, 0)
+                schizoaff_full_db['Grimacing'] = np.where((schizoaff_full_db['scid_b28'] == 3), 1, 0)
+                schizoaff_full_db['Mannerism'] = np.where((schizoaff_full_db['scid_b29'] == 3), 1, 0)
+                schizoaff_full_db['Posturing'] = np.where((schizoaff_full_db['scid_b30'] == 3), 1, 0)
+                schizoaff_full_db['Agitation'] = np.where((schizoaff_full_db['scid_b31'] == 3), 1, 0)
+                schizoaff_full_db['Stereotype'] = np.where((schizoaff_full_db['scid_b32'] == 3), 1, 0)
+                schizoaff_full_db['Mutism'] = np.where((schizoaff_full_db['scid_b33'] == 3), 1, 0)
+                schizoaff_full_db['Echolalia'] = np.where((schizoaff_full_db['scid_b34'] == 3), 1, 0)
+                schizoaff_full_db['Negativism'] = np.where((schizoaff_full_db['scid_b35'] == 3), 1, 0)
+                schizoaff_full_db['Echopraxia'] = np.where((schizoaff_full_db['scid_b36'] == 3), 1, 0)
+                schizoaff_full_db['Catalepsy'] = np.where((schizoaff_full_db['scid_b37'] == 3), 1, 0)
+                schizoaff_full_db['Waxy Flexibility'] = np.where((schizoaff_full_db['scid_b38'] == 3), 1, 0)
+
+                # Checking the With Catatonia item of schizoaffective disorder # Needs to have 3 or more catatonic items to be present # Only capturing people that have schizoaffective disorder (c10 == 3)
+                schizoaff_full_db['W/ CATA SCHIZOAFFECTIVE Discrepancy'] = np.where((((schizoaff_full_db['scid_c28'] == 1) & (schizoaff_full_db['scid_c28cnt'] < 3)) | ((schizoaff_full_db['scid_c26'] == 3) & (schizoaff_full_db['scid_c28cnt'] >= 3) & (schizoaff_full_db['scid_c28'] != 1))), "Problem", "Fine")
+
+                # Checking Count Discrepancy
+                schizoaff_full_db['New SCHIZOAFFECTIVE CATA Symptom Count'] = schizoaff_full_db.loc[:, ['Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                'Waxy Flexibility']].sum(axis = 1)
+                schizoaff_full_db['SCHIZOAFFECTIVE CATA Symptom Count Discrepancy'] = np.where(((schizoaff_full_db['scid_c26'] == 3) & (schizoaff_full_db['scid_c28cnt'] != schizoaff_full_db['New SCHIZOAFFECTIVE CATA Symptom Count'])), "Problem", "Fine")
+
+                # Getting Count Items and the Discrepancy Values
+                refined_schizoaff_db = schizoaff_full_db.loc[:, ['scid_interviewername', 'Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy', 
+                'Waxy Flexibility', 'scid_c26', 'scid_c28', 'scid_c28cnt', 'W/ CATA SCHIZOAFFECTIVE Discrepancy', 'New SCHIZOAFFECTIVE CATA Symptom Count', 'SCHIZOAFFECTIVE CATA Symptom Count Discrepancy']]
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_schizoaff_db['Count Discrepancy Direction'] = np.where(((refined_schizoaff_db['scid_c26'] != 3)), "Nothing to Check", np.where(((refined_schizoaff_db['scid_c28cnt'] - refined_schizoaff_db['New SCHIZOAFFECTIVE CATA Symptom Count']) > 0), 
+                "Original Count Larger", np.where(((refined_schizoaff_db['scid_c28cnt'] - refined_schizoaff_db['New SCHIZOAFFECTIVE CATA Symptom Count']) == 0), "Same", "New Count Larger")))
+                refined_schizoaff_db['Count Discrepancy Value'] = refined_schizoaff_db['scid_c28cnt'] - refined_schizoaff_db['New SCHIZOAFFECTIVE CATA Symptom Count']
+
+                # Getting Only Problem Children
+                only_problem_children_schizoaff = refined_schizoaff_db.loc[((refined_schizoaff_db['W/ CATA SCHIZOAFFECTIVE Discrepancy'] == "Problem") | (refined_schizoaff_db['SCHIZOAFFECTIVE CATA Symptom Count Discrepancy'] == "Problem"))]
+
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a With Catatonia item (scid_c28cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **W/ CATA SCHIZOAFFECTIVE Discrepancy** - The W/ Catatonia item (scid_c28) should only be marked 1 (Yes) if 3 or more symptoms are accounted for. This column checks to see if that is the case.")
+                    st.markdown("- **New SCHIZOAFFECTIVE CATA Symptom Count** - My new symptom count using the Catatonia Symptom columns.")
+                    st.markdown("- **SCHIZOAFFECTIVE CATA Symptom Count Discrepancy** - Checks whether the the scid Catatonia Symptom count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_schizoaff = st.checkbox("Would you like to see the associated interviewer?", key = 'schizoaff')
+                if interviewer_selection_schizoaff:
+                    problem_children_schizoaff_final = only_problem_children_schizoaff.loc[:, ['scid_interviewername', 'Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                    'Waxy Flexibility', 'scid_c28', 'W/ CATA SCHIZOAFFECTIVE Discrepancy', 'scid_c28cnt', 'New SCHIZOAFFECTIVE CATA Symptom Count', 'SCHIZOAFFECTIVE CATA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_schizoaff_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_schizoaff_final)
+                    csv = convert_df(problem_children_schizoaff_final)
+                else:
+                    problem_children_schizoaff_final = only_problem_children_schizoaff.loc[:, ['Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                    'Waxy Flexibility', 'scid_c28', 'W/ CATA SCHIZOAFFECTIVE Discrepancy', 'scid_c28cnt', 'New SCHIZOAFFECTIVE CATA Symptom Count', 'SCHIZOAFFECTIVE CATA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_schizoaff_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_schizoaff_final)
+                    csv = convert_df(problem_children_schizoaff_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_schizoaff_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'schizoaff_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_schizoaff_final[problem_children_schizoaff_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_schizoaff_final[problem_children_schizoaff_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                schizoaff_problem_subject_list = problem_children_schizoaff_final.index.values.tolist()
+                see_more_schizoaff = st.multiselect("See Specific Subject Info? [Select as many as you would like]", schizoaff_problem_subject_list)
+                interviewer_selection_schizoaff_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_schizoaff')
+                if see_more_schizoaff is not None:
+                    if interviewer_selection_schizoaff_2:
+                        specific_schizoaff_subject_db = schizoaff_full_db.loc[see_more_schizoaff,:]
+                        specific_schizoaff_subject_db_2 = specific_schizoaff_subject_db.loc[:,['scid_interviewername','Stupor', 'scid_b27', 'Grimacing', 'scid_b28', 'Mannerism', 'scid_b29', 'Posturing', 
+                        'scid_b30', 'Agitation', 'scid_b31', 'Stereotype', 'scid_b32', 'Mutism', 'scid_b33', 'Echolalia', 'scid_b34', 'Negativism', 'scid_b35', 'Echopraxia',
+                        'scid_b36', 'Catalepsy', 'scid_b37', 'Waxy Flexibility', 'scid_b38', 'scid_c28cnt', 'New SCHIZOAFFECTIVE CATA Symptom Count']]
+                        specific_schizoaff_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_schizoaff_subject_db_2)
+                        csv = convert_df(specific_schizoaff_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'schizoaff_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_schizoaff_subject_db = schizoaff_full_db.loc[see_more_schizoaff,:]
+                        specific_schizoaff_subject_db_2 = specific_schizoaff_subject_db.loc[:,['Stupor', 'scid_b27', 'Grimacing', 'scid_b28', 'Mannerism', 'scid_b29', 'Posturing', 
+                        'scid_b30', 'Agitation', 'scid_b31', 'Stereotype', 'scid_b32', 'Mutism', 'scid_b33', 'Echolalia', 'scid_b34', 'Negativism', 'scid_b35', 'Echopraxia',
+                        'scid_b36', 'Catalepsy', 'scid_b37', 'Waxy Flexibility', 'scid_b38', 'scid_c28cnt', 'New SCHIZOAFFECTIVE CATA Symptom Count']]
+                        specific_schizoaff_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_schizoaff_subject_db_2)
+                        csv = convert_df(specific_schizoaff_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'schizoaff_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+            if module_c_syndrome_selection == "Brief Psychotic Disorder":
+                st.markdown(f"#### {module_c_syndrome_selection}")
+                st.markdown("---")
+
+                # Opening datafile
+                full_db = pd.read_csv(full_data)
+                module_c_items_db = pd.read_excel(module_c_file)
+                
+                # Selecting only module C items and Catatonia Items from Module B (including subject_id and scid_interviewername of course) [THIS IS ALL OF MODULE C]
+                module_c_item_list = module_c_items_db['module_c_items'].values.tolist()
+                catatonia_list = ['scid_b27', 'scid_b28', 'scid_b29', 'scid_b30', 'scid_b31', 'scid_b32', 'scid_b33', 'scid_b34', 'scid_b35', 'scid_b36', 'scid_b37', 'scid_b38']
+                final_list = ['subject_id', 'scid_interviewername'] + catatonia_list + module_c_item_list
+
+                module_c_db = full_db.loc[:, final_list]
+
+                # Schizophrenia # Just Checking Calculation errors
+                brief_psy_full_db = module_c_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_b27', 'scid_b28', 'scid_b29', 'scid_b30', 'scid_b31', 'scid_b32', 'scid_b33', 'scid_b34', 
+                'scid_b35', 'scid_b36', 'scid_b37', 'scid_b38', 'scid_c44', 'scid_c47', 'scid_c47cnt']]
+
+                # Setting index to subject_id
+                brief_psy_full_db.set_index('subject_id', inplace = True)
+
+                # Filling all the na values with 0 in order to run comparisons
+                brief_psy_full_db.fillna(0, inplace = True)
+
+                # Setting the SCID variables to integers instead of floats as it is more readable
+                brief_psy_full_db = brief_psy_full_db.astype({'scid_b27':'int', 'scid_b28':'int', 'scid_b29':'int', 'scid_b30':'int', 'scid_b31':'int', 'scid_b32':'int', 'scid_b33':'int', 'scid_b34':'int', 
+                'scid_b35':'int', 'scid_b36':'int', 'scid_b37':'int', 'scid_b38':'int', 'scid_c44':'int', 'scid_c47':'int', 'scid_c47cnt':'int'})
+
+                # Counting Catatonia Items # Max is 12
+                brief_psy_full_db['Stupor'] = np.where((brief_psy_full_db['scid_b27'] == 3), 1, 0)
+                brief_psy_full_db['Grimacing'] = np.where((brief_psy_full_db['scid_b28'] == 3), 1, 0)
+                brief_psy_full_db['Mannerism'] = np.where((brief_psy_full_db['scid_b29'] == 3), 1, 0)
+                brief_psy_full_db['Posturing'] = np.where((brief_psy_full_db['scid_b30'] == 3), 1, 0)
+                brief_psy_full_db['Agitation'] = np.where((brief_psy_full_db['scid_b31'] == 3), 1, 0)
+                brief_psy_full_db['Stereotype'] = np.where((brief_psy_full_db['scid_b32'] == 3), 1, 0)
+                brief_psy_full_db['Mutism'] = np.where((brief_psy_full_db['scid_b33'] == 3), 1, 0)
+                brief_psy_full_db['Echolalia'] = np.where((brief_psy_full_db['scid_b34'] == 3), 1, 0)
+                brief_psy_full_db['Negativism'] = np.where((brief_psy_full_db['scid_b35'] == 3), 1, 0)
+                brief_psy_full_db['Echopraxia'] = np.where((brief_psy_full_db['scid_b36'] == 3), 1, 0)
+                brief_psy_full_db['Catalepsy'] = np.where((brief_psy_full_db['scid_b37'] == 3), 1, 0)
+                brief_psy_full_db['Waxy Flexibility'] = np.where((brief_psy_full_db['scid_b38'] == 3), 1, 0)
+
+                # Checking the With Catatonia item of Brief Pyshcotic Disorder # Needs to have 3 or more catatonic items to be present # Only capturing people that have Brief Psychotic Disorder (c44 == 3)
+                brief_psy_full_db['W/ CATA BRIEF PSYCHOTIC DISORDER Discrepancy'] = np.where((((brief_psy_full_db['scid_c47'] == 1) & (brief_psy_full_db['scid_c47cnt'] < 3)) | ((brief_psy_full_db['scid_c44'] == 3) & (brief_psy_full_db['scid_c47cnt'] >= 3) & (brief_psy_full_db['scid_c47'] != 1))), "Problem", "Fine")
+
+                # Checking Count Discrepancy
+                brief_psy_full_db['New BRIEF PSYCHOTIC CATA Symptom Count'] = brief_psy_full_db.loc[:, ['Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                'Waxy Flexibility']].sum(axis = 1)
+                brief_psy_full_db['BRIEF PSYCHOTIC CATA Symptom Count Discrepancy'] = np.where(((brief_psy_full_db['scid_c44'] == 3) & (brief_psy_full_db['scid_c47cnt'] != brief_psy_full_db['New BRIEF PSYCHOTIC CATA Symptom Count'])), "Problem", "Fine")
+
+                # Getting Count Items and the Discrepancy Values
+                refined_brief_psy_db = brief_psy_full_db.loc[:, ['scid_interviewername', 'Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy', 
+                'Waxy Flexibility', 'scid_c44', 'scid_c47', 'scid_c47cnt', 'W/ CATA BRIEF PSYCHOTIC DISORDER Discrepancy', 'New BRIEF PSYCHOTIC CATA Symptom Count', 'BRIEF PSYCHOTIC CATA Symptom Count Discrepancy']]
+
+                # Getting the Count Items and the Discrepancy Values
+                refined_brief_psy_db['Count Discrepancy Direction'] = np.where(((refined_brief_psy_db['scid_c44'] != 3)), "Nothing to Check", np.where(((refined_brief_psy_db['scid_c47cnt'] - refined_brief_psy_db['New BRIEF PSYCHOTIC CATA Symptom Count']) > 0), 
+                "Original Count Larger", np.where(((refined_brief_psy_db['scid_c47cnt'] - refined_brief_psy_db['New BRIEF PSYCHOTIC CATA Symptom Count']) == 0), "Same", "New Count Larger")))
+                refined_brief_psy_db['Count Discrepancy Value'] = refined_brief_psy_db['scid_c47cnt'] - refined_brief_psy_db['New BRIEF PSYCHOTIC CATA Symptom Count']
+
+                # Getting Only Problem Children
+                only_problem_children_brief_psy = refined_brief_psy_db.loc[((refined_brief_psy_db['W/ CATA BRIEF PSYCHOTIC DISORDER Discrepancy'] == "Problem") | (refined_brief_psy_db['BRIEF PSYCHOTIC CATA Symptom Count Discrepancy'] == "Problem"))]
+
+                col1, col2 = st.columns(2)
+                with col2:
+                    st.write("**Export Breakdown**")
+                    st.write("- In the SCID there is a With Catatonia item (scid_c47cnt) and the table below outlines where the count item does not match the actual symptom count.")
+                with col1:
+                    st.write("**Column Definitions:**")
+                    st.markdown("- **W/ CATA BRIEF PSYCHOTIC DISORDER Discrepancy** - The W/ Catatonia item (scid_c47) should only be marked 1 (Yes) if 3 or more symptoms are accounted for. This column checks to see if that is the case.")
+                    st.markdown("- **New BRIEF PSYCHOTIC CATA Symptom Count** - My new symptom count using the Catatonia Symptom columns.")
+                    st.markdown("- **BRIEF PSYCHOTIC CATA Symptom Count Discrepancy** - Checks whether the the scid Catatonia Symptom count matches my manual count.")
+
+                # Creating the framework to be able to see the corresponding interviewers
+                interviewer_selection_brief_psy = st.checkbox("Would you like to see the associated interviewer?", key = 'brief_psy')
+                if interviewer_selection_brief_psy:
+                    problem_children_brief_psy_final = only_problem_children_brief_psy.loc[:, ['scid_interviewername', 'Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                    'Waxy Flexibility', 'scid_c47', 'W/ CATA BRIEF PSYCHOTIC DISORDER Discrepancy', 'scid_c47cnt', 'New BRIEF PSYCHOTIC CATA Symptom Count', 'BRIEF PSYCHOTIC CATA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_brief_psy_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_brief_psy_final)
+                    csv = convert_df(problem_children_brief_psy_final)
+                else:
+                    problem_children_brief_psy_final = only_problem_children_brief_psy.loc[:, ['Stupor', 'Grimacing', 'Mannerism', 'Posturing', 'Agitation', 'Stereotype', 'Mutism', 'Echolalia', 'Negativism', 'Echopraxia', 'Catalepsy',
+                    'Waxy Flexibility', 'scid_c47', 'W/ CATA BRIEF PSYCHOTIC DISORDER Discrepancy', 'scid_c47cnt', 'New BRIEF PSYCHOTIC CATA Symptom Count', 'BRIEF PSYCHOTIC CATA Symptom Count Discrepancy', 'Count Discrepancy Direction', 'Count Discrepancy Value']]
+                    problem_children_brief_psy_final.sort_values('subject_id', inplace = True)
+                    st.write(problem_children_brief_psy_final)
+                    csv = convert_df(problem_children_brief_psy_final)
+                
+                column1, column2 = st.columns(2)
+                with column1:
+                    st.write("Number of Problem Subjects:", len(problem_children_brief_psy_final.index))
+                    st.download_button(label = "Download Data as a CSV", data = csv, file_name = f'brief_psy_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                with column2:
+                    st.write("Number of Subjects with **New Count Larger**:", len(problem_children_brief_psy_final[problem_children_brief_psy_final['Count Discrepancy Direction'] == 'New Count Larger'].index))
+                    st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_brief_psy_final[problem_children_brief_psy_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
+                brief_psy_problem_subject_list = problem_children_brief_psy_final.index.values.tolist()
+                see_more_brief_psy = st.multiselect("See Specific Subject Info? [Select as many as you would like]", brief_psy_problem_subject_list)
+                interviewer_selection_brief_psy_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_brief_psy')
+                if see_more_brief_psy is not None:
+                    if interviewer_selection_brief_psy_2:
+                        specific_brief_psy_subject_db = brief_psy_full_db.loc[see_more_brief_psy,:]
+                        specific_brief_psy_subject_db_2 = specific_brief_psy_subject_db.loc[:,['scid_interviewername','Stupor', 'scid_b27', 'Grimacing', 'scid_b28', 'Mannerism', 'scid_b29', 'Posturing', 
+                        'scid_b30', 'Agitation', 'scid_b31', 'Stereotype', 'scid_b32', 'Mutism', 'scid_b33', 'Echolalia', 'scid_b34', 'Negativism', 'scid_b35', 'Echopraxia',
+                        'scid_b36', 'Catalepsy', 'scid_b37', 'Waxy Flexibility', 'scid_b38', 'scid_c47cnt', 'New BRIEF PSYCHOTIC CATA Symptom Count']]
+                        specific_brief_psy_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_brief_psy_subject_db_2)
+                        csv = convert_df(specific_brief_psy_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'brief_psy_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
+                    else:
+                        specific_brief_psy_subject_db = brief_psy_full_db.loc[see_more_brief_psy,:]
+                        specific_brief_psy_subject_db_2 = specific_brief_psy_subject_db.loc[:,['Stupor', 'scid_b27', 'Grimacing', 'scid_b28', 'Mannerism', 'scid_b29', 'Posturing', 
+                        'scid_b30', 'Agitation', 'scid_b31', 'Stereotype', 'scid_b32', 'Mutism', 'scid_b33', 'Echolalia', 'scid_b34', 'Negativism', 'scid_b35', 'Echopraxia',
+                        'scid_b36', 'Catalepsy', 'scid_b37', 'Waxy Flexibility', 'scid_b38', 'scid_c47cnt', 'New BRIEF PSYCHOTIC CATA Symptom Count']]
+                        specific_brief_psy_subject_db_2.sort_values('subject_id', inplace=True)
+                        st.write(specific_brief_psy_subject_db_2)
+                        csv = convert_df(specific_brief_psy_subject_db_2)
+                        st.download_button("Download Data as a CSV", data = csv, file_name=f'brief_psy_problem_subject_more_depth_{today}.csv', mime = 'text/csv')
