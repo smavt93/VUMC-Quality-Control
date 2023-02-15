@@ -9,6 +9,8 @@ module_e_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Modul
 module_f_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20F%20Items.xlsx?raw=true'
 module_k_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20K%20Items.xlsx?raw=true'
 module_c_file = 'https://github.com/smavt93/VUMC-Quality-Control/blob/main/Module%20C%20Items.xlsx?raw=true'
+crosswalk_file = '/Users/canluser/Library/CloudStorage/Box-Box/CANL Docs/SVT Files/Coding/Visual Studio Code/VUMC Quality Control/CMDE Archive/test crosswalk (2.15.23).xlsx'
+
 
 # Markdown Info
 first_selection = st.sidebar.selectbox("What would you like to do?", ["---", "Symptom Counts", "Second Level Diagnosis Check"])
@@ -69,7 +71,7 @@ if first_selection == 'Symptom Counts':
 
                 module_a_db = full_db.loc[:, final_list]
 
-                # Current Major Depression # Just checking for calculation erros
+                # Current Major Depression # Just checking for calculation errors
                 cmde_full_db = module_a_db.loc[:, ['subject_id', 'scid_interviewername', 'scid_a1a', 'scid_a1b', 'scid_a2a', 'scid_a2ar', 'scid_a2b', 'scid_a2br', 'scid_a3a', 'scid_a3b1', 'scid_a3b2', 'scid_a6',
                 'scid_a8', 'scid_a9a', 'scid_a9b', 'scid_a12', 'scid_a13a', 'scid_a13b','scid_a16a', 'scid_a16b', 'scid_a17', 'scid_a22', 'scid_a22cnt']]
                 
@@ -141,8 +143,8 @@ if first_selection == 'Symptom Counts':
                     st.write("Number of Subjects with **Original Count Larger:**", len(problem_children_cmde_final[problem_children_cmde_final['Count Discrepancy Direction'] == 'Original Count Larger'].index))
                 cmde_problem_subject_list = problem_children_cmde_final.index.values.tolist()
                 see_more_cmde = st.multiselect("See Specific Subject Info? [Select as many as you would like]", cmde_problem_subject_list)
-                interviewer_selection_cmde_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_cmde')
-                if see_more_cmde is not None:
+                if see_more_cmde != []:
+                    interviewer_selection_cmde_2 = st.checkbox("Would you like to see the associated interviewer?", key =  'extra_cmde')
                     if interviewer_selection_cmde_2:
                         specific_cmde_subject_db = cmde_full_db.loc[see_more_cmde,:]
                         specific_cmde_subject_db_2 = specific_cmde_subject_db.loc[:,['scid_interviewername','A1 Items', 'scid_a1a', 'scid_a1b', 'A2 Items', 'scid_a2a', 'scid_a2ar', 'scid_a2b', 'scid_a2br',
@@ -4500,3 +4502,185 @@ if first_selection == 'Second Level Diagnosis Check':
         st.markdown("- **Module PD** - All Module PD diagnoses")
         st.markdown("- **Module C** - All Module C diagnoses")
         st.markdown("- **Module D** - All Module D diagnoses")
+    if full_data is not None:
+        if data_selection == 'Module A':
+            st.markdown(f"## {data_selection}")
+            full_data_db = pd.read_csv(full_data)
+            tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(['Everything', 'CMDE', 'PMDE', 'CME', 'PME', 'CHME', 'PHME', 'CPDD', 'PPDD'])
+            ### Creating the entire comparison database in order to slice from
+            module_a_items_db = pd.read_excel(module_a_file)
+            module_a_items_list = module_a_items_db['module_a_items'].values.tolist()
+            final_module_a_list = ['subject_id', 'scid_interviewername', 'scid_iscomplete', 'dx1'] + module_a_items_list
+            module_a_db_full = full_data_db.loc[:, final_module_a_list].query("scid_iscomplete == 'Yes' & dx1 != 47")
+            with tab2:
+                ##### CMDE #####
+                cmde_db = module_a_db_full.loc[:, ['subject_id', 'scid_interviewername', 'scid_a1a', 'scid_a1b', 'scid_a2a', 'scid_a2ar', 'scid_a2b', 'scid_a2br', 'scid_a3a', 'scid_a3b1',
+                'scid_a3b2', 'scid_a6', 'scid_a8', 'scid_a9a', 'scid_a9b', 'scid_a12', 'scid_a13a', 'scid_a13b', 'scid_a16a', 'scid_a16b', 'scid_a17', 'scid_a22', 'scid_a22cnt', 'scid_a23i', 
+                'scid_a23d', 'scid_a24', 'scid_a25']]
+
+                cmde_db = cmde_db.set_index('subject_id')
+
+                cmde_db = cmde_db.fillna(0)
+
+                # Changing values to int
+                cmde_items = ['scid_a1a', 'scid_a1b', 'scid_a2a', 'scid_a2ar', 'scid_a2b', 'scid_a2br', 'scid_a3a', 'scid_a3b1', 'scid_a3b2', 'scid_a6', 'scid_a8', 'scid_a9a', 'scid_a9b', 
+                'scid_a12', 'scid_a13a', 'scid_a13b', 'scid_a16a', 'scid_a16b', 'scid_a17', 'scid_a22', 'scid_a22cnt', 'scid_a23i', 'scid_a23d', 'scid_a24', 'scid_a25']
+                cmde_dict = {cmde_items[i]:'int' for i in range(len(cmde_items))}
+                cmde_db = cmde_db.astype(cmde_dict)
+
+                cmde_db['A1 Item (CMDE)'] = np.where(((cmde_db['scid_a1a'] == 3) | (cmde_db['scid_a1b'] == 3)), 1, 0)
+                cmde_db['A2 Item (CMDE)'] = np.where(((cmde_db['scid_a2a'] == 3) | (cmde_db['scid_a2ar'] == 3) | (cmde_db['scid_a2b'] == 3) | (cmde_db['scid_a2br'] == 3)), 1, 0)
+                cmde_db['A3 Item (CMDE)'] = np.where(((cmde_db['scid_a3a'] == 3) | (cmde_db['scid_a3b1'] == 3) | (cmde_db['scid_a3b2'] == 3)), 1, 0)
+                cmde_db['A4 Item (CMDE)'] = np.where(((cmde_db['scid_a6'] == 3) | (cmde_db['scid_a8'] == 3)), 1, 0)
+                cmde_db['A5 Item (CMDE)'] = np.where(((cmde_db['scid_a9a'] == 3) | (cmde_db['scid_a9b'] == 3)), 1 , 0)
+                cmde_db['A6 Item (CMDE)'] = np.where(((cmde_db['scid_a12'] == 3)), 1, 0)
+                cmde_db['A7 Item (CMDE)'] = np.where(((cmde_db['scid_a13a'] == 3) | (cmde_db['scid_a13b'] == 3)), 1, 0)
+                cmde_db['A8 Item (CMDE)'] = np.where(((cmde_db['scid_a16a'] == 3) | (cmde_db['scid_a16b'] == 3)), 1, 0)
+                cmde_db['A9 Item (CMDE)'] = np.where(((cmde_db['scid_a17'] == 3)), 1, 0)
+
+                cmde_db['Criterion A Count (CMDE)'] = cmde_db.loc[:, ['A1 Item (CMDE)', 'A2 Item (CMDE)', 'A3 Item (CMDE)', 'A4 Item (CMDE)', 'A5 Item (CMDE)', 'A6 Item (CMDE)', 'A7 Item (CMDE)',
+                'A8 Item (CMDE)', 'A9 Item (CMDE)']].sum(axis = 1)
+                cmde_db['Criterion A Presence (CMDE)'] = np.where((((cmde_db['A1 Item (CMDE)'] == 1) | (cmde_db['A2 Item (CMDE)'] == 1)) & (cmde_db['Criterion A Count (CMDE)'] >= 5)), 1, 0)
+                
+                cmde_db['Criterion B (CMDE)'] = np.where(((cmde_db['scid_a23i'] >= 3) | (cmde_db['scid_a23d'] == 3)), 1, 0)
+                
+                # Diagnosis Check # Doing one check based on scid data and another based on my evaluation
+                cmde_db['CMDE Diagnosis Check (1)'] = np.where(((cmde_db['scid_a25'] == 3) & (cmde_db['scid_a22'] == 3) & (cmde_db['Criterion B (CMDE)'] == 1) & (cmde_db['scid_a24'] ==3)), "No Problem",
+                np.where(((cmde_db['scid_a25'] == 3) & ((cmde_db['scid_a22'] != 3) | (cmde_db['Criterion B (CMDE)'] == 0) | (cmde_db['scid_a24'] != 3))), "Incorrect Diagnosis", 
+                np.where(((cmde_db['scid_a25'] != 3) & ((cmde_db['scid_a22'] == 3) & (cmde_db['Criterion B (CMDE)'] == 1) & (cmde_db['scid_a24'] ==3))), "Diagnosis Needed", "Not Applicable")))
+                
+                cmde_db['CMDE Diagnosis Check (2)'] = np.where(((cmde_db['scid_a25'] == 3) & (cmde_db['Criterion A Presence (CMDE)'] == 1) & (cmde_db['Criterion B (CMDE)'] == 1) & (cmde_db['scid_a24'] ==3)), "No Problem",
+                np.where(((cmde_db['scid_a25'] == 3) & ((cmde_db['Criterion A Presence (CMDE)'] == 0) | (cmde_db['Criterion B (CMDE)'] == 0) | (cmde_db['scid_a24'] != 3))), "Incorrect Diagnosis", 
+                np.where(((cmde_db['scid_a25'] != 3) & ((cmde_db['Criterion A Presence (CMDE)'] == 1) & (cmde_db['Criterion B (CMDE)'] == 1) & (cmde_db['scid_a24'] ==3))), "Diagnosis Needed", "Not Applicable")))
+                # Refined DB
+                refined_cmde_db = cmde_db.loc[(((cmde_db['CMDE Diagnosis Check (1)'] != 'No Problem') & (cmde_db['CMDE Diagnosis Check (1)'] != 'Not Applicable')) | 
+                ((cmde_db['CMDE Diagnosis Check (2)'] != 'No Problem') & (cmde_db['CMDE Diagnosis Check (2)'] != 'Not Applicable')))]
+                st.markdown("### CMDE")
+                st.write("This database shows the discrepancy in diagnosis for CMDE.")
+                st.write("I did a total of two different diagnosis checks using the following criteria:")
+                st.markdown("1. Criterion A was threshold (scid_a22).")
+                st.markdown("- Need to have **5** of the 9 Criterion A items marked as threshold (3) and one of them is A1 OR A2. Used the internal value and my manual count to check the validity.")
+                st.markdown("2. Criterion B was threshold (scid_a23i or scid_a23d).")
+                st.markdown("3. Criterion C was threshold.")
+                interviewer_selection_cmde_full = st.multiselect("What would you like to see?", ["Base", "Interviewer", "Individual Items"])
+                if interviewer_selection_cmde_full == ["Base"]:
+                    final_refined_cmde_db = refined_cmde_db.loc[:, ['A1 Item (CMDE)', 'A2 Item (CMDE)', 'A3 Item (CMDE)', 'A4 Item (CMDE)', 'A5 Item (CMDE)', 'A6 Item (CMDE)',
+                    'A7 Item (CMDE)', 'A8 Item (CMDE)', 'A9 Item (CMDE)', 'scid_a22cnt', 'Criterion A Count (CMDE)', 'scid_a22', 'Criterion B (CMDE)', 'scid_a24', 'scid_a25', 
+                    'CMDE Diagnosis Check (1)', 'CMDE Diagnosis Check (2)']]
+                    st.write(final_refined_cmde_db)
+                    csv = convert_df(refined_cmde_db)
+                    st.download_button(label = "Download as a CSV", data = csv, file_name = f'cmde_diag_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                if interviewer_selection_cmde_full == ["Base", "Interviewer"]:
+                    final_refined_cmde_db = refined_cmde_db.loc[:, ['scid_interviewername', 'A1 Item (CMDE)', 'A2 Item (CMDE)', 'A3 Item (CMDE)', 'A4 Item (CMDE)', 'A5 Item (CMDE)', 'A6 Item (CMDE)',
+                    'A7 Item (CMDE)', 'A8 Item (CMDE)', 'A9 Item (CMDE)', 'scid_a22cnt', 'Criterion A Count (CMDE)', 'scid_a22', 'Criterion B (CMDE)', 'scid_a24', 'scid_a25', 
+                    'CMDE Diagnosis Check (1)', 'CMDE Diagnosis Check (2)']]
+                    st.write(final_refined_cmde_db)
+                    csv = convert_df(refined_cmde_db)
+                    st.download_button(label = "Download as a CSV", data = csv, file_name = f'cmde_diag_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                if interviewer_selection_cmde_full == ['Individual Items']:
+                    final_refined_cmde_db = refined_cmde_db.loc[:, ['A1 Item (CMDE)', 'scid_a1a', 'scid_a1b', 'A2 Item (CMDE)', 'scid_a2a', 'scid_a2ar', 'scid_a2b', 'scid_a2br',
+                    'A3 Item (CMDE)', 'scid_a3a', 'scid_a3b1', 'scid_a3b2', 'A4 Item (CMDE)', 'scid_a6', 'scid_a8', 'A5 Item (CMDE)', 'scid_a9a', 'scid_a9b', 'A6 Item (CMDE)', 'scid_a12',
+                    'A7 Item (CMDE)', 'scid_a13a', 'scid_a13b', 'A8 Item (CMDE)', 'scid_a16a', 'scid_a16b', 'A9 Item (CMDE)', 'scid_a17', 'scid_a22cnt', 'Criterion A Count (CMDE)', 'scid_a22',
+                    'Criterion B (CMDE)', 'scid_a24', 'scid_a25', 'CMDE Diagnosis Check (1)', 'CMDE Diagnosis Check (2)']]
+                    st.write(final_refined_cmde_db)
+                    csv = convert_df(refined_cmde_db)
+                    st.download_button(label = "Download as a CSV", data = csv, file_name = f'cmde_diag_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                if interviewer_selection_cmde_full == ['Individual Items', 'Interviewer']:
+                    final_refined_cmde_db = refined_cmde_db.loc[:, ['scid_interviewername','A1 Item (CMDE)', 'scid_a1a', 'scid_a1b', 'A2 Item (CMDE)', 'scid_a2a', 'scid_a2ar', 'scid_a2b', 'scid_a2br',
+                    'A3 Item (CMDE)', 'scid_a3a', 'scid_a3b1', 'scid_a3b2', 'A4 Item (CMDE)', 'scid_a6', 'scid_a8', 'A5 Item (CMDE)', 'scid_a9a', 'scid_a9b', 'A6 Item (CMDE)', 'scid_a12',
+                    'A7 Item (CMDE)', 'scid_a13a', 'scid_a13b', 'A8 Item (CMDE)', 'scid_a16a', 'scid_a16b', 'A9 Item (CMDE)', 'scid_a17', 'scid_a22cnt', 'Criterion A Count (CMDE)', 'scid_a22',
+                    'Criterion B (CMDE)', 'scid_a24', 'scid_a25', 'CMDE Diagnosis Check (1)', 'CMDE Diagnosis Check (2)']]
+                    st.write(final_refined_cmde_db)
+                    csv = convert_df(refined_cmde_db)
+                    st.download_button(label = "Download as a CSV", data = csv, file_name = f'cmde_diag_problem_subjects_export_{today}.csv', mime = 'text/csv')
+            with tab3:
+                ##### PMDE #####
+                pmde_db = module_a_db_full.loc[:, ['subject_id', 'scid_interviewername', 'scid_a27a', 'scid_a27b', 'scid_a28a', 'scid_a28ar', 'scid_a28b', 'scid_a28br', 'scid_a29a', 'scid_a29b1',
+                'scid_a29b2', 'scid_a32', 'scid_a34', 'scid_a35a', 'scid_a35b', 'scid_a38', 'scid_a39a', 'scid_a39b', 'scid_a42a', 'scid_a42b', 'scid_a43', 'scid_a48', 'scid_a48cnt', 'scid_a49i', 
+                'scid_a49d', 'scid_a50', 'scid_a51']]
+
+                pmde_db = pmde_db.set_index('subject_id')
+
+                pmde_db = pmde_db.fillna(0)
+
+                # Changing values to int
+                pmde_items = ['scid_a27a', 'scid_a27b', 'scid_a28a', 'scid_a28ar', 'scid_a28b', 'scid_a28br', 'scid_a29a', 'scid_a29b1', 'scid_a29b2', 'scid_a32', 'scid_a34', 'scid_a35a', 'scid_a35b', 
+                'scid_a38', 'scid_a39a', 'scid_a39b', 'scid_a42a', 'scid_a42b', 'scid_a43', 'scid_a48', 'scid_a48cnt', 'scid_a49i', 'scid_a49d', 'scid_a50', 'scid_a51']
+                pmde_dict = {pmde_items[i]:'int' for i in range(len(pmde_items))}
+                pmde_db = pmde_db.astype(pmde_dict)
+
+                pmde_db['A1 Item (PMDE)'] = np.where(((pmde_db['scid_a27a'] == 3) | (pmde_db['scid_a27b'] == 3)), 1, 0)
+                pmde_db['A2 Item (PMDE)'] = np.where(((pmde_db['scid_a28a'] == 3) | (pmde_db['scid_a28ar'] == 3) | (pmde_db['scid_a28b'] == 3) | (pmde_db['scid_a28br'] == 3)), 1, 0)
+                pmde_db['A3 Item (PMDE)'] = np.where(((pmde_db['scid_a29a'] == 3) | (pmde_db['scid_a29b1'] == 3) | (pmde_db['scid_a29b2'] == 3)), 1, 0)
+                pmde_db['A4 Item (PMDE)'] = np.where(((pmde_db['scid_a32'] == 3) | (pmde_db['scid_a34'] == 3)), 1, 0)
+                pmde_db['A5 Item (PMDE)'] = np.where(((pmde_db['scid_a35a'] == 3) | (pmde_db['scid_a35b'] == 3)), 1 , 0)
+                pmde_db['A6 Item (PMDE)'] = np.where(((pmde_db['scid_a38'] == 3)), 1, 0)
+                pmde_db['A7 Item (PMDE)'] = np.where(((pmde_db['scid_a39a'] == 3) | (pmde_db['scid_a39b'] == 3)), 1, 0)
+                pmde_db['A8 Item (PMDE)'] = np.where(((pmde_db['scid_a42a'] == 3) | (pmde_db['scid_a42b'] == 3)), 1, 0)
+                pmde_db['A9 Item (PMDE)'] = np.where(((pmde_db['scid_a43'] == 3)), 1, 0)
+
+                pmde_db['Criterion A Count (PMDE)'] = pmde_db.loc[:, ['A1 Item (PMDE)', 'A2 Item (PMDE)', 'A3 Item (PMDE)', 'A4 Item (PMDE)', 'A5 Item (PMDE)', 'A6 Item (PMDE)', 'A7 Item (PMDE)',
+                'A8 Item (PMDE)', 'A9 Item (PMDE)']].sum(axis = 1)
+                pmde_db['Criterion A Presence (PMDE)'] = np.where((((pmde_db['A1 Item (PMDE)'] == 1) | (pmde_db['A2 Item (PMDE)'] == 1)) & (pmde_db['Criterion A Count (PMDE)'] >= 5)), 1, 0)
+                
+                pmde_db['Criterion B (PMDE)'] = np.where(((pmde_db['scid_a49i'] >= 3) | (pmde_db['scid_a49d'] == 3)), 3, 0)
+                
+                # Diagnosis Check # Doing one check based on scid data and another based on my evaluation
+                pmde_db['PMDE Diagnosis Check (1)'] = np.where(((pmde_db['scid_a51'] == 3) & (pmde_db['scid_a48'] == 3) & (pmde_db['Criterion B (PMDE)'] == 3) & (pmde_db['scid_a50'] ==3)), "No Problem",
+                np.where(((pmde_db['scid_a51'] == 3) & ((pmde_db['scid_a48'] != 3) | (pmde_db['Criterion B (PMDE)'] == 0) | (pmde_db['scid_a50'] != 3))), "Incorrect Diagnosis", 
+                np.where(((pmde_db['scid_a51'] != 3) & ((pmde_db['scid_a48'] == 3) & (pmde_db['Criterion B (PMDE)'] == 3) & (pmde_db['scid_a50'] ==3))), "Diagnosis Needed", "Not Applicable")))
+                
+                pmde_db['PMDE Diagnosis Check (2)'] = np.where(((pmde_db['scid_a51'] == 3) & (pmde_db['Criterion A Presence (PMDE)'] == 1) & (pmde_db['Criterion B (PMDE)'] == 3) & (pmde_db['scid_a50'] ==3)), "No Problem",
+                np.where(((pmde_db['scid_a51'] == 3) & ((pmde_db['Criterion A Presence (PMDE)'] == 0) | (pmde_db['Criterion B (PMDE)'] == 0) | (pmde_db['scid_a50'] != 3))), "Incorrect Diagnosis", 
+                np.where(((pmde_db['scid_a51'] != 3) & ((pmde_db['Criterion A Presence (PMDE)'] == 1) & (pmde_db['Criterion B (PMDE)'] == 3) & (pmde_db['scid_a50'] ==3))), "Diagnosis Needed", "Not Applicable")))
+                # Refined DB
+                refined_pmde_db = pmde_db.loc[(((pmde_db['PMDE Diagnosis Check (1)'] != 'No Problem') & (pmde_db['PMDE Diagnosis Check (1)'] != 'Not Applicable')) | 
+                ((pmde_db['PMDE Diagnosis Check (2)'] != 'No Problem') & (pmde_db['PMDE Diagnosis Check (2)'] != 'Not Applicable')))]
+                st.markdown("### PMDE")
+                st.write("This database shows the discrepancy in diagnosis for PMDE.")
+                st.write("I did a total of two different diagnosis checks using the following criteria:")
+                st.markdown("1. Criterion A was threshold (scid_a48).")
+                st.markdown("- Need to have **5** of the 9 Criterion A items marked as threshold (3) and one of them is A1 OR A2. Used the internal value and my manual count to check the validity.")
+                st.markdown("2. Criterion B was threshold (scid_a49i or scid_a49d).")
+                st.markdown("3. Criterion C was threshold.")
+                st.write(refined_pmde_db.loc[:, ['A1 Item (PMDE)', 'A2 Item (PMDE)', 'A3 Item (PMDE)', 'A4 Item (PMDE)', 'A5 Item (PMDE)', 'A6 Item (PMDE)',
+                    'A7 Item (PMDE)', 'A8 Item (PMDE)', 'A9 Item (PMDE)', 'scid_a48cnt', 'Criterion A Count (PMDE)', 'scid_a48', 'Criterion B (PMDE)', 'scid_a50', 'scid_a51', 
+                    'PMDE Diagnosis Check (1)', 'PMDE Diagnosis Check (2)']])
+                st.write("Number of problem subjects:", len(refined_pmde_db.loc[:, ['A1 Item (PMDE)', 'A2 Item (PMDE)', 'A3 Item (PMDE)', 'A4 Item (PMDE)', 'A5 Item (PMDE)', 'A6 Item (PMDE)',
+                    'A7 Item (PMDE)', 'A8 Item (PMDE)', 'A9 Item (PMDE)', 'scid_a48cnt', 'Criterion A Count (PMDE)', 'scid_a48', 'Criterion B (PMDE)', 'scid_a50', 'scid_a51', 
+                    'PMDE Diagnosis Check (1)', 'PMDE Diagnosis Check (2)']].index.values.tolist()))
+                interviewer_selection_pmde_full = st.multiselect("What would you like to see?", ["Base", "Interviewer", "Individual Items"], key = 'pmde_full')
+                if interviewer_selection_pmde_full == ["Base"]:
+                    final_refined_pmde_db = refined_pmde_db.loc[:, ['A1 Item (PMDE)', 'A2 Item (PMDE)', 'A3 Item (PMDE)', 'A4 Item (PMDE)', 'A5 Item (PMDE)', 'A6 Item (PMDE)',
+                    'A7 Item (PMDE)', 'A8 Item (PMDE)', 'A9 Item (PMDE)', 'scid_a48cnt', 'Criterion A Count (PMDE)', 'scid_a48', 'Criterion B (PMDE)', 'scid_a50', 'scid_a51', 
+                    'PMDE Diagnosis Check (1)', 'PMDE Diagnosis Check (2)']]
+                    st.write(final_refined_pmde_db)
+                    csv = convert_df(refined_pmde_db)
+                    st.write("Number of problem subjects:", len(final_refined_pmde_db.index.tolist()))
+                    st.download_button(label = "Download as a CSV", data = csv, file_name = f'pmde_diag_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                if interviewer_selection_pmde_full == ["Base", "Interviewer"] or interviewer_selection_pmde_full == ['Interviewer', 'Base']:
+                    final_refined_pmde_db = refined_pmde_db.loc[:, ['scid_interviewername', 'A1 Item (PMDE)', 'A2 Item (PMDE)', 'A3 Item (PMDE)', 'A4 Item (PMDE)', 'A5 Item (PMDE)', 'A6 Item (PMDE)',
+                    'A7 Item (PMDE)', 'A8 Item (PMDE)', 'A9 Item (PMDE)', 'scid_a48cnt', 'Criterion A Count (PMDE)', 'scid_a48', 'Criterion B (PMDE)', 'scid_a50', 'scid_a51', 
+                    'PMDE Diagnosis Check (1)', 'PMDE Diagnosis Check (2)']]
+                    st.write(final_refined_pmde_db)
+                    csv = convert_df(refined_pmde_db)
+                    st.write("Number of problem subjects:", len(final_refined_pmde_db.index.tolist()))
+                    st.download_button(label = "Download as a CSV", data = csv, file_name = f'pmde_diag_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                if interviewer_selection_pmde_full == ['Individual Items']:
+                    final_refined_pmde_db = refined_pmde_db.loc[:, ['A1 Item (PMDE)', 'scid_a27a', 'scid_a27b', 'A2 Item (PMDE)', 'scid_a28a', 'scid_a28ar', 'scid_a28b', 'scid_a28br',
+                    'A3 Item (PMDE)', 'scid_a29a', 'scid_a29b1', 'scid_a29b2', 'A4 Item (PMDE)', 'scid_a32', 'scid_a34', 'A5 Item (PMDE)', 'scid_a35a', 'scid_a35b', 'A6 Item (PMDE)', 'scid_a38',
+                    'A7 Item (PMDE)', 'scid_a39a', 'scid_a39b', 'A8 Item (PMDE)', 'scid_a42a', 'scid_a42b', 'A9 Item (PMDE)', 'scid_a43', 'scid_a48cnt', 'Criterion A Count (PMDE)', 'scid_a48',
+                    'Criterion B (PMDE)', 'scid_a50', 'scid_a51', 'PMDE Diagnosis Check (1)', 'PMDE Diagnosis Check (2)']]
+                    st.write(final_refined_pmde_db)
+                    csv = convert_df(refined_pmde_db)
+                    st.write("Number of problem subjects:", len(final_refined_pmde_db.index.tolist()))
+                    st.download_button(label = "Download as a CSV", data = csv, file_name = f'pmde_diag_problem_subjects_export_{today}.csv', mime = 'text/csv')
+                if interviewer_selection_pmde_full == ['Individual Items', 'Interviewer'] or interviewer_selection_pmde_full == ['Interviewer', 'Individual Items']:
+                    final_refined_pmde_db = refined_pmde_db.loc[:, ['scid_interviewername','A1 Item (PMDE)', 'scid_a27a', 'scid_a27b', 'A2 Item (PMDE)', 'scid_a28a', 'scid_a28ar', 'scid_a28b', 'scid_a28br',
+                    'A3 Item (PMDE)', 'scid_a29a', 'scid_a29b1', 'scid_a29b2', 'A4 Item (PMDE)', 'scid_a32', 'scid_a34', 'A5 Item (PMDE)', 'scid_a35a', 'scid_a35b', 'A6 Item (PMDE)', 'scid_a38',
+                    'A7 Item (PMDE)', 'scid_a39a', 'scid_a39b', 'A8 Item (PMDE)', 'scid_a42a', 'scid_a42b', 'A9 Item (PMDE)', 'scid_a43', 'scid_a48cnt', 'Criterion A Count (PMDE)', 'scid_a48',
+                    'Criterion B (PMDE)', 'scid_a50', 'scid_a51', 'PMDE Diagnosis Check (1)', 'PMDE Diagnosis Check (2)']]
+                    st.write(final_refined_pmde_db)
+                    csv = convert_df(refined_pmde_db)
+                    st.write("Number of problem subjects:", len(final_refined_pmde_db.index.tolist()))
+                    st.download_button(label = "Download as a CSV", data = csv, file_name = f'pmde_diag_problem_subjects_export_{today}.csv', mime = 'text/csv')
